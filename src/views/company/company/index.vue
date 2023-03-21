@@ -168,6 +168,7 @@ import {
 
 import { listDeptOptions } from '@/api/dept';
 import { listRoleOptions } from '@/api/role';
+import { getUserArea } from '@/api/user';
 
 import {
   ElTree,
@@ -195,6 +196,9 @@ import {
 import { parseTime } from '@/utils';
 
 import router from '@/router';
+import { useUserStore } from '@/store/modules/user';
+import { store } from '@/store';
+const userStore = useUserStore();
 
 const queryFormRef = ref(ElForm); // 查询表单
 const dataFormRef = ref(ElForm); // 用户表单
@@ -520,8 +524,29 @@ function closeDialog() {
   formData.value.id = undefined;
 }
 
+/**
+ * 获取部门下拉项
+ */
+async function getDeptOptions(province: any) {
+  getUserArea().then((response: any) => {
+    if (province === '全国') {
+      citylist.value = response.data;
+    } else {
+      response.data.forEach((element: any) => {
+        if (element.name === province) {
+          if (element.children && element.children.length > 0) {
+            citylist.value = element.children;
+          } else {
+            citylist.value = response.data;
+          }
+        }
+      });
+    }
+  });
+}
+
 onMounted(() => {
-  citylist.value = getAreaJson();
+  getDeptOptions(userStore.$state.province);
   // 初始化用户列表数据
   handleQuery();
 });
