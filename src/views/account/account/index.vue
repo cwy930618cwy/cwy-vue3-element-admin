@@ -71,12 +71,12 @@
             </el-table-column>
             <el-table-column label="账号" align="center" prop="userName" />
             <el-table-column label="姓名" width="120" align="center" prop="linkMan" />
-            <el-table-column label="近七日总DAU" width="120" align="center" prop="accountDAU">
+            <el-table-column label="近七日总DAU" v-if="userStore.$state.roleId === 1" width="120" align="center" prop="accountDAU">
               <template #default="scope">
                 <span>{{ scope.row.dailyCount ? scope.row?.dailyCount['总计'] : ''}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="用户角色" width="120" align="center" prop="roleId">
+            <el-table-column label="用户角色" v-if="userStore.$state.roleId === 1" width="120" align="center" prop="roleId">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatRoleName(scope.row.roleId) }}</span>
               </template>
@@ -117,10 +117,11 @@
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="600px" append-to-body @close="closeDialog">
       <el-form ref="dataFormRef" label-position="top" height="250" :model="formData" :rules="rules" label-width="80px">
         <el-form-item label="所属公司名称" prop="company">
-          <el-select v-model="formData.company" filterable remote reserve-keyword placeholder="请输入关键词" :remote-method="getGenderOptions" :loading="loading" @change="selectCompany">
+          <el-select v-if="userStore.$state.roleId === 1" v-model="formData.company" filterable remote reserve-keyword placeholder="请输入关键词" :remote-method="getGenderOptions" :loading="loading" @change="selectCompany">
             <el-option v-for="item in restaurants" :key="item.unitName" :label="item.unitName" :value="item.unitName">
             </el-option>
           </el-select>
+          <el-input v-else v-model="formData.company" disabled placeholder="请输入账号" />
         </el-form-item>
         <el-form-item label="用户角色" prop="roleId">
           <el-radio-group v-model="formData.roleId">
@@ -490,12 +491,14 @@ function resetPassword(row: { [key: string]: any }) {
 }
 
 const resetTemp = () => {
+  console.log('userStore.$state.company----', userStore.$state.company);
+  console.log('citylist----', citylist);
   state.formData = {
     accountNo: null,
     company: userStore.$state.roleId === 1 ? '' : userStore.$state.company,
     roleId: 1,
     userName: '',
-    province: citylist.value[0].name,
+    province: '',
     linkMan: '',
     linkPhone: '',
     ramark: ''
@@ -513,9 +516,9 @@ async function handleAdd() {
   await getDeptOptions(userStore.$state.province);
   await getRoleOptions();
   nextTick(() => {
-    resetTemp();
     dataFormRef.value.resetFields();
     dataFormRef.value.clearValidate();
+    resetTemp();
   });
 }
 
@@ -599,7 +602,11 @@ async function getDeptOptions(province: any) {
     } else {
       response.data.forEach((element: any) => {
         if (element.name === province) {
-          citylist.value = element.children;
+          if (element.children && element.children.length > 0) {
+            citylist.value = element.children;
+          } else {
+            citylist.value = response.data;
+          }
         }
       });
     }

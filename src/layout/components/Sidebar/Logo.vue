@@ -12,7 +12,7 @@ defineProps({
 });
 
 const logo = ref<string>(
-  new URL(`../../../assets/logo.png`, import.meta.url).href
+  new URL(`../../../assets/logo_white_no.png`, import.meta.url).href
 );
 </script>
 
