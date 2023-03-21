@@ -259,6 +259,10 @@ const state = reactive({
     ramark: ''
   } as any,
   queryParams: {
+    company: '',
+    accountName: '',
+    linkPhone: '',
+    states: 0,
     pageNumber: 1,
     pageSize: 10
   } as any,

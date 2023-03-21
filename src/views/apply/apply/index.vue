@@ -88,7 +88,7 @@ import {
 import { getAreaJson } from '@/constant/area.js';
 
 // api
-import { fetchList, addUser, updateApply } from '@/api/apply';
+import { fetchList, updateApply } from '@/api/apply';
 import { listDeptOptions } from '@/api/dept';
 import { listRoleOptions } from '@/api/role';
 
@@ -143,6 +143,8 @@ const state = reactive({
     states: 1
   } as any,
   queryParams: {
+    companyName: '',
+    phoneNumber: '',
     pageNumber: 1,
     pageSize: 10
   } as any,

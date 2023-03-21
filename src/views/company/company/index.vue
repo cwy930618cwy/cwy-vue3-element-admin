@@ -463,11 +463,11 @@ function submitForm() {
       const userId = state.formData.companyId;
 
       state.formData.accessBeginTime = parseTime(
-        Date.parse(new Date(state.formData.accessBeginTime)),
+        Date.parse(new Date(state.formData.accessBeginTime) as any),
         '{y}-{m}-{d}'
       );
       state.formData.accessEndTime = parseTime(
-        Date.parse(new Date(state.formData.accessEndTime)),
+        Date.parse(new Date(state.formData.accessEndTime) as any),
         '{y}-{m}-{d}'
       );
 
