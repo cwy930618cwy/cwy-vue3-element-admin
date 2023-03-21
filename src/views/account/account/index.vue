@@ -123,7 +123,7 @@
           </el-select>
           <el-input v-else v-model="formData.company" disabled placeholder="请输入账号" />
         </el-form-item>
-        <el-form-item label="用户角色" prop="roleId">
+        <el-form-item label="用户角色" v-if="userStore.$state.roleId === 1" prop="roleId">
           <el-radio-group v-model="formData.roleId">
             <el-radio v-for="item in userRoles" :key="item.id" :label="item.id">{{item.name}}</el-radio>
           </el-radio-group>
@@ -251,7 +251,7 @@ const state = reactive({
   formData: {
     accountNo: null,
     company: '',
-    roleId: 1,
+    roleId: 4,
     userName: '',
     province: '',
     linkMan: '',
@@ -496,7 +496,7 @@ const resetTemp = () => {
   state.formData = {
     accountNo: null,
     company: userStore.$state.roleId === 1 ? '' : userStore.$state.company,
-    roleId: 1,
+    roleId: 4,
     userName: '',
     province: '',
     linkMan: '',
