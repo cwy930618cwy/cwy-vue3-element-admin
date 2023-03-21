@@ -1,8 +1,16 @@
 import request from '@/utils/request';
 
-export function fetchList(query: any) {
+export function fetchCompanyInfo(query: any) {
   return request({
     url: '/api/v1/authorize/company/info',
+    method: 'post',
+    data: query
+  })
+}
+
+export function fetchList(query: any) {
+  return request({
+    url: '/api/v1/authorize/info',
     method: 'post',
     data: query
   })

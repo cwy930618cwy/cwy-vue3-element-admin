@@ -105,3 +105,16 @@ export function getSeven(timestamp: any) {
   const day = parseInt(restSec / (60 * 60 * 24 * 1000));
   return day
 }
+
+import { useUserStore } from '@/store/modules/user';
+const userStore = useUserStore();
+
+export function getformatRoleName(roleId: any) {
+  let roleName = ''
+  userStore.$state.rolesTypeList.forEach((item: any) => {
+    if (item.id === roleId) {
+      roleName = item.roleName
+    }
+  })
+  return roleName
+}

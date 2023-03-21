@@ -39,6 +39,9 @@ app.config.globalProperties.$filters = {
   formatSeven(time: any) {
     if (!time) return time
     return filters.getSeven(time)
+  },
+  formatRoleName(time: any) {
+    return filters.getformatRoleName(time)
   }
 }
 

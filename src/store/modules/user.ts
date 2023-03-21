@@ -18,6 +18,7 @@ export const useUserStore = defineStore('user', () => {
   const companyId = ref<string>('');
   const province = ref<string>('');
   const accountNum = ref<string>('');
+  const roleId = ref(0) as any;
   const roleName = ref('') as any;
   const rolesTypeList = ref([]) as any;
   const roles = ref<Array<string>>([]); // 用户角色编码集合 → 判断路由权限
@@ -77,12 +78,13 @@ export const useUserStore = defineStore('user', () => {
           companyId.value = data.data.companyId;
           accountNum.value = data.data.accountNum;          
           roles.value = data.data.roles;
+          roleId.value = data.data.roleId;
           perms.value = data.data.perms;
           company.value = data.data.company;
 
           rolesTypeList.value.forEach((element: any) => {
-            if (Number(Object.keys(element)) === data.data.roleId) {
-              roleName.value = Object.values(element)[0]
+            if (element.id === data.data.roleId) {
+              roleName.value = element.roleName
             }
           });
           resolve(data.data);
@@ -121,6 +123,7 @@ export const useUserStore = defineStore('user', () => {
     perms.value = [];
   }
   return {
+    roleId,
     companyId,
     rolesTypeList,
     roleName,

@@ -44,7 +44,7 @@
               </template>
             </el-table-column>
 
-            <el-table-column v-for="item in state.header" :key="item" :label="item" min-width="120" align="center" prop="dailyCount">
+            <el-table-column v-for="item in state.header" :key="item" :label="item" min-width="80" align="center" prop="dailyCount">
               <template #default="scope">
                 <span>{{ scope.row.dailyCount[item] }}</span>
               </template>

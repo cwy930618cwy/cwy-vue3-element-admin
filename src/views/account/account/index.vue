@@ -1,7 +1,7 @@
 <template>
   <div class="app-container">
 
-    <el-card shadow="never" style="margin-bottom: 10px;">
+    <el-card shadow="never" style="margin-bottom: 10px;" v-if="userStore.$state.roleId === 3">
       <div class="companyAll">
         <div class="list">
           <div class="split"></div>
@@ -23,6 +23,10 @@
       <el-col :span="24" :xs="24">
         <div class="search">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
+            <el-form-item label="公司名称" prop="company" v-if="userStore.$state.roleId === 1">
+              <el-input v-model="queryParams.company" placeholder="请输入公司名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+
             <el-form-item label="账号" prop="accountName">
               <el-input v-model="queryParams.accountName" placeholder="请输入账号名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
             </el-form-item>
@@ -72,7 +76,11 @@
                 <span>{{ scope.row.dailyCount ? scope.row?.dailyCount['总计'] : ''}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="用户角色" width="120" align="center" prop="roleId" />
+            <el-table-column label="用户角色" width="120" align="center" prop="roleId">
+              <template #default="scope">
+                <span>{{ proxy.$filters.formatRoleName(scope.row.roleId) }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="所属公司名称" width="220" align="center" prop="company" />
             <el-table-column label="手机号" width="120" align="center" prop="linkPhone" />
             <el-table-column label="地区权限" align="center" prop="province" width="120" />
@@ -109,7 +117,10 @@
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="600px" append-to-body @close="closeDialog">
       <el-form ref="dataFormRef" label-position="top" height="250" :model="formData" :rules="rules" label-width="80px">
         <el-form-item label="所属公司名称" prop="company">
-          <el-input v-model="formData.company" disabled placeholder="请输入所属公司名称" />
+          <el-select v-model="formData.company" filterable remote reserve-keyword placeholder="请输入关键词" :remote-method="getGenderOptions" :loading="loading" @change="selectCompany">
+            <el-option v-for="item in restaurants" :key="item.unitName" :label="item.unitName" :value="item.unitName">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="用户角色" prop="roleId">
           <el-radio-group v-model="formData.roleId">
@@ -163,9 +174,12 @@ import {
 } from 'vue';
 import { getAreaJson } from '@/constant/area.js';
 
+import { searchCompany } from '@/api/company';
+
 // api
 import {
   fetchList,
+  fetchCompanyInfo,
   detailAccount,
   createAccount,
   updateAccount,
@@ -331,10 +345,12 @@ async function getRoleOptions() {
 async function getUserRoles() {
   state.userRoles = [];
   userStore.$state.rolesTypeList.forEach((item: any) => {
-    state.userRoles.push({
-      id: Number(Object.keys(item)),
-      name: Object.values(item)[0]
-    });
+    if (item.remarks !== '0') {
+      state.userRoles.push({
+        id: item.id,
+        name: item.roleName
+      });
+    }
   });
 }
 
@@ -363,18 +379,33 @@ function handleStatusChange(row: { [key: string]: any }) {
  */
 function handleQuery() {
   state.loading = true;
-  fetchList({
-    accountName: state.queryParams.accountName,
-    companyId: userStore.$state.companyId,
-    linkPhone: state.queryParams.linkPhone,
-    pageNumber: state.queryParams.pageNumber,
-    pageSize: state.queryParams.pageSize,
-    states: state.queryParams.states ? 1 : 0
-  }).then(({ data }) => {
-    state.userList = data.list;
-    state.total = data.totalSize;
-    state.loading = false;
-  });
+  if (userStore.$state.roleId === 3) {
+    fetchCompanyInfo({
+      accountName: state.queryParams.accountName,
+      companyId: userStore.$state.companyId,
+      linkPhone: state.queryParams.linkPhone,
+      pageNumber: state.queryParams.pageNumber,
+      pageSize: state.queryParams.pageSize,
+      states: state.queryParams.states ? 1 : 0
+    }).then(({ data }) => {
+      state.userList = data.list;
+      state.total = data.totalSize;
+      state.loading = false;
+    });
+  } else {
+    fetchList({
+      accountName: state.queryParams.accountName,
+      company: state.queryParams.company,
+      linkPhone: state.queryParams.linkPhone,
+      pageNumber: state.queryParams.pageNumber,
+      pageSize: state.queryParams.pageSize,
+      states: state.queryParams.states ? 1 : 0
+    }).then(({ data }) => {
+      state.userList = data.list;
+      state.total = data.totalSize;
+      state.loading = false;
+    });
+  }
 }
 
 /**
@@ -461,7 +492,7 @@ function resetPassword(row: { [key: string]: any }) {
 const resetTemp = () => {
   state.formData = {
     accountNo: null,
-    company: userStore.$state.company,
+    company: userStore.$state.roleId === 1 ? '' : userStore.$state.company,
     roleId: 1,
     userName: '',
     province: citylist.value[0].name,
@@ -479,11 +510,10 @@ async function handleAdd() {
     title: '添加企业',
     visible: true
   };
-  await getDeptOptions();
+  await getDeptOptions(userStore.$state.province);
   await getRoleOptions();
   nextTick(() => {
     resetTemp();
-    formData.value.company = userStore.$state.company;
     dataFormRef.value.resetFields();
     dataFormRef.value.clearValidate();
   });
@@ -562,13 +592,13 @@ function closeDialog() {
 /**
  * 获取部门下拉项
  */
-async function getDeptOptions() {
+async function getDeptOptions(province: any) {
   getUserArea().then((response: any) => {
-    if (userStore.$state.province === '全国') {
+    if (province === '全国') {
       citylist.value = response.data;
     } else {
       response.data.forEach((element: any) => {
-        if (element.name === userStore.$state.province) {
+        if (element.name === province) {
           citylist.value = element.children;
         }
       });
@@ -579,10 +609,22 @@ async function getDeptOptions() {
 /**
  * 获取性别下拉项
  */
-function getGenderOptions() {
-  // proxy.$getDictionaries('gender').then((response: any) => {
-  //   state.genderOptions = response?.data;
-  // });
+function getGenderOptions(query: any) {
+  searchCompany({ company: query }).then((response: any) => {
+    restaurants.value = response?.data;
+  });
+}
+
+function selectCompany(query: any) {
+  restaurants.value.forEach((item: any) => {
+    if (item.unitName === query) {
+      getDeptOptions(item.province[0]);
+    }
+  });
+}
+
+function handleSelect(item: any) {
+  console.log('item-----', item);
 }
 
 /**
@@ -605,6 +647,7 @@ async function handleReset(row: { [key: string]: any }) {
 }
 
 const citylist = ref([]) as any;
+const restaurants = ref([]) as any;
 
 onMounted(() => {
   queryParams.value.company = router.currentRoute.value.query.company
@@ -612,11 +655,8 @@ onMounted(() => {
     : '';
 
   handleQuery();
-
-  // 初始化性别字典
-  getGenderOptions();
   // 初始化部门
-  getDeptOptions();
+  getDeptOptions(userStore.$state.province);
   // 初始化用户列表数据
   handleQuery();
   getUserRoles();

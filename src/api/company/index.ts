@@ -8,6 +8,14 @@ export function fetchList(query: any) {
   })
 }
 
+export function searchCompany(query: any) {
+  return request({
+    url: '/api/v1/company/searchCompany',
+    method: 'get',
+    params: query
+  })
+}
+
 export function detailCompany(query: any) {
   return request({
     url: '/api/v1/company/companyDetail',
