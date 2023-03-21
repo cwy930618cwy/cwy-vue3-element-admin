@@ -70,7 +70,7 @@ onBeforeUnmount(() => {
 <template>
   <div ref="rightPanel" :class="{ show: show }">
     <div class="right-panel-background" />
-    <div class="right-panel">
+    <!-- <div class="right-panel">
       <div
         class="right-panel__button"
         :style="{
@@ -84,7 +84,7 @@ onBeforeUnmount(() => {
       <div class="right-panel__items">
         <slot />
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 

@@ -2,7 +2,7 @@ import request from '@/utils/request';
 
 export function fetchList(query: any) {
   return request({
-    url: '/api/v1/authorize/info',
+    url: '/api/v1/authorize/company/info',
     method: 'post',
     data: query
   })
@@ -37,5 +37,13 @@ export function deleteAccount(data: any) {
     url: '/api/v1/authorize/batch/state',
     method: 'post',
     data
+  })
+}
+
+export function resetPasswordAccount(data: any) {
+  return request({
+    url: '/api/v1/authorize/resetPassword',
+    method: 'post',
+    params: data
   })
 }

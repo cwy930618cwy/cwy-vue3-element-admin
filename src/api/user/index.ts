@@ -23,6 +23,16 @@ export function getUserRoles(): AxiosPromise<UserInfo> {
 }
 
 /**
+ * 登录成功后获取地区
+ */
+export function getUserArea(): AxiosPromise<UserInfo> {
+  return request({
+    url: '/api/v1/common/area',
+    method: 'get'
+  });
+}
+
+/**
  * 获取用户分页列表
  *
  * @param queryParams

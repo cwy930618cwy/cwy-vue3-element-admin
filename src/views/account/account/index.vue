@@ -23,12 +23,12 @@
       <el-col :span="24" :xs="24">
         <div class="search">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item label="公司名称" prop="company">
-              <el-input v-model="queryParams.company" placeholder="请输入公司名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
-            </el-form-item>
-
             <el-form-item label="账号" prop="accountName">
               <el-input v-model="queryParams.accountName" placeholder="请输入账号名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            </el-form-item>
+
+            <el-form-item label="手机号" prop="linkPhone">
+              <el-input v-model="queryParams.linkPhone" placeholder="请输入手机号" clearable style="width: 200px" @keyup.enter="handleQuery" />
             </el-form-item>
 
             <el-form-item label="只看可用账号" prop="states">
@@ -45,11 +45,11 @@
             </el-form-item> -->
 
             <el-form-item>
-              <el-button type="success" :icon="Plus" @click="handleAllDisable">批量禁用</el-button>
+              <el-button type="primary" :icon="Plus" @click="handleAllDisable">批量禁用</el-button>
             </el-form-item>
 
             <el-form-item>
-              <el-button type="success" :icon="Plus" @click="handleAdd">新增</el-button>
+              <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -69,11 +69,11 @@
             <el-table-column label="姓名" width="120" align="center" prop="linkMan" />
             <el-table-column label="近七日总DAU" width="120" align="center" prop="accountDAU">
               <template #default="scope">
-                <span>{{ scope.row.dailyCount['总计']}}</span>
+                <span>{{ scope.row.dailyCount ? scope.row?.dailyCount['总计'] : ''}}</span>
               </template>
             </el-table-column>
             <el-table-column label="用户角色" width="120" align="center" prop="roleId" />
-            <el-table-column label="所属公司名称" width="120" align="center" prop="company" />
+            <el-table-column label="所属公司名称" width="220" align="center" prop="company" />
             <el-table-column label="手机号" width="120" align="center" prop="linkPhone" />
             <el-table-column label="地区权限" align="center" prop="province" width="120" />
             <el-table-column label="状态" align="center" prop="states">
@@ -92,10 +92,10 @@
                 <span>{{ proxy.$filters.formatTime(scope.row.updateTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.updateTime) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="操作" align="left" fixed="right" width="100">
+            <el-table-column label="操作" align="left" fixed="right" width="160">
               <template #default="scope">
                 <el-button type="primary" link @click="handleUpdate(scope.row)">编辑</el-button>
-                <!-- <el-button type="danger" link @click="handleDelete(scope.row)">禁用</el-button> -->
+                <el-button type="primary" link @click="handleReset(scope.row)">重置密码</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -109,7 +109,7 @@
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="600px" append-to-body @close="closeDialog">
       <el-form ref="dataFormRef" label-position="top" height="250" :model="formData" :rules="rules" label-width="80px">
         <el-form-item label="所属公司名称" prop="company">
-          <el-input v-model="formData.company" placeholder="请输入所属公司名称" />
+          <el-input v-model="formData.company" disabled placeholder="请输入所属公司名称" />
         </el-form-item>
         <el-form-item label="用户角色" prop="roleId">
           <el-radio-group v-model="formData.roleId">
@@ -169,11 +169,12 @@ import {
   detailAccount,
   createAccount,
   updateAccount,
-  deleteAccount
+  deleteAccount,
+  resetPasswordAccount
   // updateUserStatus,
   // updateUserPassword
 } from '@/api/account';
-import { listDeptOptions } from '@/api/dept';
+import { getUserArea } from '@/api/user';
 import { listRoleOptions } from '@/api/role';
 
 import {
@@ -201,6 +202,7 @@ import {
 
 import { useRouter } from 'vue-router';
 import { useUserStore } from '@/store/modules/user';
+import { store } from '@/store';
 const userStore = useUserStore();
 const router = useRouter();
 
@@ -219,6 +221,9 @@ const state = reactive({
   total: 0,
   userList: [] as any,
   dialog: {
+    visible: false
+  } as any,
+  dialogReset: {
     visible: false
   } as any,
   deptName: undefined,
@@ -324,20 +329,13 @@ async function getRoleOptions() {
 }
 
 async function getUserRoles() {
-  state.userRoles = [
-    {
-      id: 0,
-      name: '企业管理员'
-    },
-    {
-      id: 1,
-      name: '普通用户'
-    },
-    {
-      id: 2,
-      name: '超级管理员'
-    }
-  ];
+  state.userRoles = [];
+  userStore.$state.rolesTypeList.forEach((item: any) => {
+    state.userRoles.push({
+      id: Number(Object.keys(item)),
+      name: Object.values(item)[0]
+    });
+  });
 }
 
 /**
@@ -367,7 +365,8 @@ function handleQuery() {
   state.loading = true;
   fetchList({
     accountName: state.queryParams.accountName,
-    company: state.queryParams.company,
+    companyId: userStore.$state.companyId,
+    linkPhone: state.queryParams.linkPhone,
     pageNumber: state.queryParams.pageNumber,
     pageSize: state.queryParams.pageSize,
     states: state.queryParams.states ? 1 : 0
@@ -462,7 +461,7 @@ function resetPassword(row: { [key: string]: any }) {
 const resetTemp = () => {
   state.formData = {
     accountNo: null,
-    company: '',
+    company: userStore.$state.company,
     roleId: 1,
     userName: '',
     province: citylist.value[0].name,
@@ -476,8 +475,6 @@ const resetTemp = () => {
  * 添加用户
  **/
 async function handleAdd() {
-  formData.value.company = queryParams.value.company;
-
   state.dialog = {
     title: '添加企业',
     visible: true
@@ -486,6 +483,7 @@ async function handleAdd() {
   await getRoleOptions();
   nextTick(() => {
     resetTemp();
+    formData.value.company = userStore.$state.company;
     dataFormRef.value.resetFields();
     dataFormRef.value.clearValidate();
   });
@@ -495,9 +493,6 @@ async function handleAdd() {
  * 修改用户
  **/
 async function handleUpdate(row: { [key: string]: any }) {
-  // await getDeptOptions();
-  // await getRoleOptions();
-  console.log('row.userId----', row.userId);
   detailAccount({ userId: row.userId }).then((res: any) => {
     formData.value = res.data;
     dialog.value = {
@@ -568,9 +563,17 @@ function closeDialog() {
  * 获取部门下拉项
  */
 async function getDeptOptions() {
-  // listDeptOptions().then(response => {
-  //   state.deptOptions = response.data;
-  // });
+  getUserArea().then((response: any) => {
+    if (userStore.$state.province === '全国') {
+      citylist.value = response.data;
+    } else {
+      response.data.forEach((element: any) => {
+        if (element.name === userStore.$state.province) {
+          citylist.value = element.children;
+        }
+      });
+    }
+  });
 }
 
 /**
@@ -583,38 +586,27 @@ function getGenderOptions() {
 }
 
 /**
- * 导入弹窗
- */
-async function showImportDialog() {
-  await getDeptOptions();
-  await getRoleOptions();
-  importDialog.value.visible = true;
-}
-
-/**
- * Excel文件change事件
- *
- * @param file
- */
-function handleExcelChange(file: UploadFile) {
-  if (!/\.(xlsx|xls|XLSX|XLS)$/.test(file.name)) {
-    ElMessage.warning('上传Excel只能为xlsx、xls格式');
-    state.excelFile = undefined;
-    state.excelFilelist = [];
-    return false;
-  }
-  state.excelFile = file.raw;
+ * 修改用户
+ **/
+async function handleReset(row: { [key: string]: any }) {
+  ElMessageBox.confirm('确认要为账号' + row.userName + '重置密码吗?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      resetPasswordAccount({ userId: row.userId }).then(() => {
+        ElMessage.success('重置密码成功');
+      });
+    })
+    .catch(() => {
+      // row.states = row.states === 1 ? 0 : 1;
+    });
 }
 
 const citylist = ref([]) as any;
 
 onMounted(() => {
-  citylist.value = getAreaJson();
-
-  // contentId.value = router.currentRoute.value.query;
-
-  // queryParams.company = router.currentRoute.value.query.company;
-
   queryParams.value.company = router.currentRoute.value.query.company
     ? router.currentRoute.value.query.company
     : '';

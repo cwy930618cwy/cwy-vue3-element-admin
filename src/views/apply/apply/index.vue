@@ -40,7 +40,7 @@
             </el-table-column>
             <el-table-column label="备注" width="120" align="center" prop="desc" />
 
-            <el-table-column label="操作" align="left" width="200">
+            <el-table-column label="操作" align="left" fixed="right" width="100">
               <template #default="scope">
                 <el-button type="primary" v-if="!scope.row.states" link @click="handleUpdate(scope.row)">跟进</el-button>
                 <span v-else>已跟进</span>

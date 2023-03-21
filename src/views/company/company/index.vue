@@ -111,9 +111,10 @@
         <el-form-item label="授权账号数" prop="accountNum">
           <el-input v-model="formData.accountNum" type="number" placeholder="请输入授权账号数" maxlength="11" />
         </el-form-item>
-        <el-form-item label="失效日期" prop="accessEndTime">
+        <el-form-item label="开始日期和失效日期" prop="accessEndTime">
           <el-date-picker v-model="formData.accessBeginTime" type="date" placeholder="请输入生效日期">
           </el-date-picker>
+          <div style="margin: 0 20px;">-</div>
           <el-date-picker v-model="formData.accessEndTime" type="date" placeholder="请输入失效日期">
           </el-date-picker>
         </el-form-item>
@@ -401,7 +402,7 @@ function handleSelectionChange(selection: any) {
  */
 function resetPassword(row: { [key: string]: any }) {
   router.push({
-    path: '/account/account',
+    path: '/account',
     query: { company: row.company }
   });
 }

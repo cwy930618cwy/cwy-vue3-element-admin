@@ -15,6 +15,7 @@ export const useUserStore = defineStore('user', () => {
   const nickname = ref<string>('');
   const avatar = ref<string>('');
   const company = ref<string>('');
+  const companyId = ref<string>('');
   const province = ref<string>('');
   const accountNum = ref<string>('');
   const roleName = ref('') as any;
@@ -73,6 +74,7 @@ export const useUserStore = defineStore('user', () => {
           nickname.value = data.data.nickname;
           avatar.value = data.data.avatar;
           province.value = data.data.province;
+          companyId.value = data.data.companyId;
           accountNum.value = data.data.accountNum;          
           roles.value = data.data.roles;
           perms.value = data.data.perms;
@@ -119,6 +121,7 @@ export const useUserStore = defineStore('user', () => {
     perms.value = [];
   }
   return {
+    companyId,
     rolesTypeList,
     roleName,
     accountNum,

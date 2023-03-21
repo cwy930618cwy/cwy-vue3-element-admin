@@ -2,7 +2,8 @@
   <div class="login-container">
     <el-form ref="loginFormRef" :model="loginData" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
       <div class="title-container" style="display: flex;">
-        <div class="image"></div>
+        <!-- <div class="image"></div> -->
+        <img class="image" src="@/assets/logo.png" alt="首页" />
         <div class="right">
           <h3 class="title1">融标宝后台管理系统</h3>
           <h4 class="title2">挖局企业客户的贷款商机</h4>
@@ -28,16 +29,16 @@
         </el-form-item>
       </el-tooltip>
 
-      <el-button size="default" :loading="loading" type="primary" style="width: 100%; margin-bottom: 30px" @click.prevent="handleLogin">{{ $t('login.login') }}
+      <el-button size="default" :loading="loading" type="primary" style="width: 100%; margin-bottom: 30px;background: #7263ce; height: 50px;border-color: #7263ce;" @click.prevent="handleLogin">{{ $t('login.login') }}
       </el-button>
 
       <!-- 账号密码提示 -->
-      <div class="tips">
+      <!-- <div class="tips">
         <div style="position: relative">
           <span style="margin-right: 20px">{{ $t('login.username') }}: admin</span>
           <span> {{ $t('login.password') }}: 123456</span>
         </div>
-      </div>
+      </div> -->
       <el-checkbox v-model="config.autoInsertSpace">30天内免登录</el-checkbox>
     </el-form>
 
@@ -225,24 +226,23 @@ $cursor: #fff;
     .image {
       height: 80px;
       width: 80px;
-      background: beige;
       margin-right: 40px;
       margin-bottom: 40px;
     }
 
     .title1 {
       font-size: 20px;
-      color: $light_gray;
+      color: #7263ce;
       margin: 0px auto 10px auto;
     }
     .title2 {
       font-size: 18px;
-      color: $light_gray;
+      color: #7263ce;
     }
 
     .title {
       font-size: 26px;
-      color: $light_gray;
+      color: #7263ce;
       margin: 0px auto 40px auto;
       text-align: center;
       font-weight: bold;
@@ -260,6 +260,7 @@ $cursor: #fff;
 
   .el-input {
     display: inline-block;
+    color: black;
     height: 36px;
     width: 85%;
     .el-input__wrapper {
@@ -267,17 +268,16 @@ $cursor: #fff;
       background: transparent;
       box-shadow: none;
       .el-input__inner {
-        background: transparent;
-        border: 0px;
-        -webkit-appearance: none;
-        border-radius: 0px;
-        color: $light_gray;
+        // background: transparent;
+        // border: 0px;
+        // -webkit-appearance: none;
+        // border-radius: 0px;
         height: 36px;
-        caret-color: $cursor;
+        // caret-color: $cursor;
 
         &:-webkit-autofill {
-          box-shadow: 0 0 0px 1000px $bg inset !important;
-          -webkit-text-fill-color: $cursor !important;
+          // box-shadow: 0 0 0px 1000px $bg inset !important;
+          // -webkit-text-fill-color: $cursor !important;
         }
       }
     }
@@ -293,8 +293,8 @@ $cursor: #fff;
   }
 
   .el-form-item {
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(0, 0, 0, 0.1);
+    border: 1px solid #eee;
+    background: white;
     border-radius: 5px;
     color: #454545;
   }
@@ -318,7 +318,6 @@ $light_gray: #eee;
 .login-container {
   min-height: 100%;
   width: 100%;
-  background-color: $bg;
   overflow: hidden;
 
   .login-form {

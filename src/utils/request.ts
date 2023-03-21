@@ -42,7 +42,15 @@ service.interceptors.response.use(
     const { code, msg } = response.data;
     if (code === '0') {
       return response.data;
-    } else {
+    } else if (code === '30000') {
+        ElMessageBox.confirm('当前页面已失效，请重新登录', '提示', {
+          confirmButtonText: 'OK',
+          type: 'warning'
+        }).then(() => {
+          localStorage.clear();
+          window.location.href = '/';
+        });
+      } else {
       // 响应数据为二进制流处理(Excel导出)
       if (response.data instanceof ArrayBuffer) {
         return response;
