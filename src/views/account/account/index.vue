@@ -6,14 +6,14 @@
         <div class="list">
           <div class="split"></div>
           <div class="title">公司名称：</div>
-          <div class="name">{{ queryParams.company }}</div>
+          <div class="name">{{ userStore.$state.company }}</div>
         </div>
         <div class="list">
           <div class="split"></div>
           <div class="title">地区权限：</div>
-          <div class="name">{{ queryParams.company }}</div>
+          <div class="name">{{ userStore.$state.province }}</div>
         </div>
-        <div>您的企业呗授权33个账号使用权限</div>
+        <div>您的企业被授权{{ userStore.$state.accountNum }}个账号使用权限</div>
       </div>
     </el-card>
 
@@ -92,7 +92,7 @@
                 <span>{{ proxy.$filters.formatTime(scope.row.updateTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.updateTime) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="操作" align="left" width="200">
+            <el-table-column label="操作" align="left" fixed="right" width="100">
               <template #default="scope">
                 <el-button type="primary" link @click="handleUpdate(scope.row)">编辑</el-button>
                 <!-- <el-button type="danger" link @click="handleDelete(scope.row)">禁用</el-button> -->
@@ -158,7 +158,8 @@ import {
   watchEffect,
   onMounted,
   getCurrentInstance,
-  toRefs
+  toRefs,
+  nextTick
 } from 'vue';
 import { getAreaJson } from '@/constant/area.js';
 
@@ -199,6 +200,8 @@ import {
 } from '@/api/user/types';
 
 import { useRouter } from 'vue-router';
+import { useUserStore } from '@/store/modules/user';
+const userStore = useUserStore();
 const router = useRouter();
 
 const queryFormRef = ref(ElForm); // 查询表单
@@ -226,7 +229,14 @@ const state = reactive({
   // 角色下拉项
   roleOptions: [] as any,
   formData: {
-    state: 1
+    accountNo: null,
+    company: '',
+    roleId: 1,
+    userName: '',
+    province: '',
+    linkMan: '',
+    linkPhone: '',
+    ramark: ''
   } as any,
   queryParams: {
     pageNumber: 1,
@@ -322,6 +332,10 @@ async function getUserRoles() {
     {
       id: 1,
       name: '普通用户'
+    },
+    {
+      id: 2,
+      name: '超级管理员'
     }
   ];
 }
@@ -445,6 +459,19 @@ function resetPassword(row: { [key: string]: any }) {
     .catch(() => {});
 }
 
+const resetTemp = () => {
+  state.formData = {
+    accountNo: null,
+    company: '',
+    roleId: 1,
+    userName: '',
+    province: citylist.value[0].name,
+    linkMan: '',
+    linkPhone: '',
+    ramark: ''
+  };
+};
+
 /**
  * 添加用户
  **/
@@ -457,6 +484,11 @@ async function handleAdd() {
   };
   await getDeptOptions();
   await getRoleOptions();
+  nextTick(() => {
+    resetTemp();
+    dataFormRef.value.resetFields();
+    dataFormRef.value.clearValidate();
+  });
 }
 
 /**

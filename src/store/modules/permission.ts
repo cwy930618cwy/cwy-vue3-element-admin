@@ -7,6 +7,7 @@ import { ref } from 'vue';
 
 const modules = import.meta.glob('../../views/**/**.vue');
 export const Layout = () => import('@/layout/index.vue');
+import matchs from "@/routerMatch";
 
 const hasPermission = (roles: string[], route: RouteRecordRaw) => {
   if (route.meta && route.meta.roles) {
@@ -26,27 +27,30 @@ const filterAsyncRoutes = (routes: RouteRecordRaw[], roles: string[]) => {
   const res: RouteRecordRaw[] = [];
   routes.forEach(route => {
     const tmp = { ...route } as any;
-    if (hasPermission(roles, tmp)) {
-      if (tmp.component == 'Layout') {
-        tmp.component = Layout;
-      } else {
-        const component = modules[`../../views/${tmp.component}.vue`] as any;
-        if (component) {
-          tmp.component = component;
-        } else {
-          tmp.component = modules[`../../views/error-page/404.vue`];
-        }
+    const matchVal = matchs[tmp.permissionId]
+    if (matchVal) {
+      const config: any = {
+        path: matchVal.path,
+        name: matchVal.name,
+        hidden: false,
+        component: Layout,
+        meta: matchVal.meta,
+        children: []
       }
-      res.push(tmp);
-
-      if (tmp.children) {
-        tmp.children = filterAsyncRoutes(tmp.children, roles);
-      }
+      config.children = [
+        {
+          component: modules[`../../views/${matchVal.component}.vue`],
+          meta: matchVal.meta,
+          title: matchVal.meta.title,
+          name: matchVal.name,
+          path: matchVal.path
+        },
+      ]
+      res.push(config);
     }
   });
   return res;
 };
-
 // setup
 export const usePermissionStore = defineStore('permission', () => {
   // state
@@ -61,206 +65,14 @@ export const usePermissionStore = defineStore('permission', () => {
 
   function generateRoutes(roles: string[]) {
     return new Promise<RouteRecordRaw[]>((resolve, reject) => {
-      // listRoutes()
-      //   .then(response => {
+      listRoutes()
+        .then(response => {
+          const asyncRoutes = response.data;
+          const accessedRoutes: any = filterAsyncRoutes(asyncRoutes, []);
+          setRoutes(accessedRoutes);
+          resolve(accessedRoutes);
+        })
 
-      //     // response.data = [
-      //     //   {
-      //     //     component: "Layout",
-      //     //     meta: {
-      //     //       title: '企业管理',
-      //     //       icon: 'system',
-      //     //       hidden: false,
-      //     //       alwaysShow: true,
-      //     //       roles: ['ADMIN'],
-      //     //       keepAlive: true
-      //     //     },
-      //     //     path: "/company",
-      //     //     redirect: "/company/index",
-      //     //     children: [
-      //     //       {
-      //     //         component: "company/company/index",
-      //     //         meta: { title: "企业管理", icon: "user", hidden: false, alwaysShow: false, roles: ["ADMIN"], keepAlive: true },
-      //     //         alwaysShow: false,
-      //     //         hidden: false,
-      //     //         icon: "user",
-      //     //         keepAlive: true,
-      //     //         roles: ["ADMIN"],
-      //     //         title: "企业管理",
-      //     //         name: "company",
-      //     //         path: "company"
-      //     //       },
-      //     //     ]
-      //     //   },
-      //     //   {
-      //     //     component: "Layout",
-      //     //     meta: {
-      //     //       title: '账户管理',
-      //     //       icon: 'user',
-      //     //       hidden: false,
-      //     //       alwaysShow: true,
-      //     //       roles: ['ADMIN'],
-      //     //       keepAlive: true
-      //     //     },
-      //     //     path: "/account",
-      //     //     redirect: "/account/index",
-      //     //     children: [
-      //     //       {
-      //     //         component: "account/account/index",
-      //     //         meta: { title: "账户管理", icon: "user", hidden: false, alwaysShow: false, roles: ["ADMIN"], keepAlive: true },
-      //     //         alwaysShow: false,
-      //     //         hidden: false,
-      //     //         icon: "user",
-      //     //         keepAlive: true,
-      //     //         roles: ["ADMIN"],
-      //     //         title: "账户管理",
-      //     //         name: "account",
-      //     //         path: "account"
-      //     //       },
-      //     //     ]
-      //     //   },
-      //     //   {
-      //     //     component: "Layout",
-      //     //     meta: {
-      //     //       title: '账号申请',
-      //     //       icon: 'user',
-      //     //       hidden: false,
-      //     //       alwaysShow: true,
-      //     //       roles: ['ADMIN'],
-      //     //       keepAlive: true
-      //     //     },
-      //     //     path: "/apply",
-      //     //     redirect: "/apply/index",
-      //     //     children: [
-      //     //       {
-      //     //         component: "apply/apply/index",
-      //     //         meta: { title: "账号申请", icon: "user", hidden: false, alwaysShow: false, roles: ["ADMIN"], keepAlive: true },
-      //     //         alwaysShow: false,
-      //     //         hidden: false,
-      //     //         icon: "user",
-      //     //         keepAlive: true,
-      //     //         roles: ["ADMIN"],
-      //     //         title: "账号申请",
-      //     //         name: "apply",
-      //     //         path: "apply"
-      //     //       },
-      //     //     ]
-      //     //   }
-      //     // ]
-
-      //     const asyncRoutes = response.data;
-      //     const accessedRoutes = filterAsyncRoutes(asyncRoutes, roles);
-      //     setRoutes(accessedRoutes);
-      //     resolve(accessedRoutes);
-      //   })
-      //   .catch(error => {
-      //     reject(error);
-      //   });
-      const response: any = {
-        data: []
-      }
-
-      // [
-      //   {
-      //     title: '企业管理',
-      //     key: 'system',
-      //     children: [
-      //       {
-      //         title: '企业儿子',
-      //         key: 'sye2'
-      //       }
-      //     ]
-      //   }
-      // ]
-
-      response.data = [
-        {
-          component: "Layout",
-          meta: {
-            title: '企业管理',
-            icon: 'system',
-            hidden: false,
-            roles: ["ADMIN"],
-            alwaysShow: true,
-            keepAlive: true
-          },
-          path: "/company",
-          redirect: "/company/index",
-          children: [
-            {
-              component: "company/company/index",
-              meta: { title: "企业管理", icon: "user", hidden: false, alwaysShow: false, roles: ["ADMIN"], keepAlive: true },
-              alwaysShow: false,
-              hidden: false,
-              icon: "user",
-              keepAlive: true,
-              roles: ["ADMIN"],
-              title: "企业管理",
-              name: "company",
-              path: "company"
-            },
-          ]
-        },
-        {
-          component: "Layout",
-          meta: {
-            title: '账户管理',
-            icon: 'user',
-            hidden: false,
-            alwaysShow: true,
-            roles: ['ADMIN'],
-            keepAlive: true
-          },
-          path: "/account",
-          redirect: "/account/index",
-          children: [
-            {
-              component: "account/account/index",
-              meta: { title: "账户管理", icon: "user", hidden: false, alwaysShow: false, roles: ["ADMIN"], keepAlive: true },
-              alwaysShow: false,
-              hidden: false,
-              icon: "user",
-              keepAlive: true,
-              roles: ["ADMIN"],
-              title: "账户管理",
-              name: "account",
-              path: "account"
-            },
-          ]
-        },
-        {
-          component: "Layout",
-          meta: {
-            title: '账号申请',
-            icon: 'user',
-            hidden: false,
-            alwaysShow: true,
-            roles: ['ADMIN'],
-            keepAlive: true
-          },
-          path: "/apply",
-          redirect: "/apply/index",
-          children: [
-            {
-              component: "apply/apply/index",
-              meta: { title: "账号申请", icon: "user", hidden: false, alwaysShow: false, roles: ["ADMIN"], keepAlive: true },
-              alwaysShow: false,
-              hidden: false,
-              icon: "user",
-              keepAlive: true,
-              roles: ["ADMIN"],
-              title: "账号申请",
-              name: "apply",
-              path: "apply"
-            },
-          ]
-        }
-      ]
-
-      const asyncRoutes = response.data;
-      const accessedRoutes = filterAsyncRoutes(asyncRoutes, roles);
-      setRoutes(accessedRoutes);
-      resolve(accessedRoutes);
       
     });
   }

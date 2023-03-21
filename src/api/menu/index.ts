@@ -7,7 +7,7 @@ import { MenuQuery, Menu, Resource, MenuForm } from './types';
  */
 export function listRoutes() {
   return request({
-    url: '/api/v1/menus/routes',
+    url: '/api/v1/permission/list',
     method: 'get'
   });
 }

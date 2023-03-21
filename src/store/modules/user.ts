@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 import { getToken, setToken, removeToken } from '@/utils/auth';
 import { loginApi, logoutApi } from '@/api/auth';
-import { getUserInfo } from '@/api/user';
+import { getUserInfo, getUserRoles } from '@/api/user';
 import { resetRouter } from '@/router';
 import { store } from '@/store';
 import { LoginData } from '@/api/auth/types';
@@ -14,6 +14,11 @@ export const useUserStore = defineStore('user', () => {
   const token = ref<string>(getToken() || '');
   const nickname = ref<string>('');
   const avatar = ref<string>('');
+  const company = ref<string>('');
+  const province = ref<string>('');
+  const accountNum = ref<string>('');
+  const roleName = ref('') as any;
+  const rolesTypeList = ref([]) as any;
   const roles = ref<Array<string>>([]); // 用户角色编码集合 → 判断路由权限
   const perms = ref<Array<string>>([]); // 用户权限编码集合 → 判断按钮权限
 
@@ -34,28 +39,51 @@ export const useUserStore = defineStore('user', () => {
     });
   }
 
+  // 获取角色列表
+  function getRoles() {
+    return new Promise<any>((resolve, reject) => {
+      getUserRoles()
+        .then((data: any) => {
+          rolesTypeList.value = data.data
+          resolve(data.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
   // 获取信息(用户昵称、头像、角色集合、权限集合)
   function getInfo() {
     return new Promise<any>((resolve, reject) => {
       getUserInfo()
         .then((data: any) => {
-          const data2 = {
-            nickname: data.data.userName,
-            avatar: '',
-            roles: ['ADMIN'],
-            perms: []
-          }
           // // if (!data) {
           // //   return reject('Verification failed, please Login again.');
           // // }
           // // if (!data.roles || data.roles.length <= 0) {
           // //   reject('getUserInfo: roles must be a non-null array!');
           // // }
-          nickname.value = data2.nickname;
-          avatar.value = data2.avatar;
-          roles.value = data2.roles;
-          perms.value = data2.perms;
-          resolve(data2);
+
+          data.data.nickname = data.data.userName
+          data.data.avatar = ''
+          data.data.roles = ['ADMIN']
+          data.data.perms = []
+            
+          nickname.value = data.data.nickname;
+          avatar.value = data.data.avatar;
+          province.value = data.data.province;
+          accountNum.value = data.data.accountNum;          
+          roles.value = data.data.roles;
+          perms.value = data.data.perms;
+          company.value = data.data.company;
+
+          rolesTypeList.value.forEach((element: any) => {
+            if (Number(Object.keys(element)) === data.data.roleId) {
+              roleName.value = Object.values(element)[0]
+            }
+          });
+          resolve(data.data);
         })
         .catch(error => {
           reject(error);
@@ -84,16 +112,25 @@ export const useUserStore = defineStore('user', () => {
     token.value = '';
     nickname.value = '';
     avatar.value = '';
+    province.value = '';
+    company.value = '';
+    accountNum.value = '';
     roles.value = [];
     perms.value = [];
   }
   return {
+    rolesTypeList,
+    roleName,
+    accountNum,
+    province,
+    company,
     token,
     nickname,
     avatar,
     roles,
     perms,
     login,
+    getRoles,
     getInfo,
     logout,
     resetToken

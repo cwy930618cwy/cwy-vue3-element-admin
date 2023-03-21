@@ -6,12 +6,12 @@
       <el-col :span="24" :xs="24">
         <div class="search">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
-            <el-form-item label="公司名称" prop="companyName">
-              <el-input v-model="queryParams.companyName" placeholder="请输入公司名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            <el-form-item label="公司名称" prop="company">
+              <el-input v-model="queryParams.company" placeholder="请输入公司名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
             </el-form-item>
 
-            <el-form-item label="手机号" prop="keywords">
-              <el-input v-model="queryParams.keywords" placeholder="请输入手机号" clearable style="width: 200px" @keyup.enter="handleQuery" />
+            <el-form-item label="手机号" prop="phoneNumber">
+              <el-input v-model="queryParams.phoneNumber" placeholder="请输入手机号" clearable style="width: 200px" @keyup.enter="handleQuery" />
             </el-form-item>
 
             <el-form-item>

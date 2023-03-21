@@ -13,6 +13,16 @@ export function getUserInfo(): AxiosPromise<UserInfo> {
 }
 
 /**
+ * 登录成功后获取用户信息（昵称、头像、权限集合和角色集合）
+ */
+export function getUserRoles(): AxiosPromise<UserInfo> {
+  return request({
+    url: '/api/v1/common/role',
+    method: 'get'
+  });
+}
+
+/**
  * 获取用户分页列表
  *
  * @param queryParams

@@ -20,8 +20,8 @@ export function loginApi(data: LoginData): AxiosPromise<TokenResult> {
  */
 export function logoutApi() {
   return request({
-    url: '/api/v1/auth/logout',
-    method: 'delete'
+    url: '/api/v1/common/logOut',
+    method: 'post'
   });
 }
 

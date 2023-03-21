@@ -35,6 +35,10 @@ app.config.globalProperties.$filters = {
   formatTime(time: any) {
     if (!time) return time
     return filters.getYMDHMS(time)
+  },
+  formatSeven(time: any) {
+    if (!time) return time
+    return filters.getSeven(time)
   }
 }
 

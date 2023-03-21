@@ -31,6 +31,7 @@ router.beforeEach(async (to, from, next) => {
         }
       } else {
         try {
+          await userStore.getRoles();
           const { roles } = await userStore.getInfo();
           const accessRoutes: RouteRecordRaw[] =
             await permissionStore.generateRoutes(roles);

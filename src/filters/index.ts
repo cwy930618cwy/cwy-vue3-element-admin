@@ -97,3 +97,11 @@ export function getYMDHMS(timestamp: any) {
   }
   return year + '-' + month + '-' + date
 }
+
+export function getSeven(timestamp: any) {
+  const date = new Date(timestamp);
+  const nowTime = new Date();
+  const restSec = date.getTime() - nowTime.getTime();
+  const day = parseInt(restSec / (60 * 60 * 24 * 1000));
+  return day
+}

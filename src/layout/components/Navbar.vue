@@ -60,8 +60,8 @@ function logout() {
 
     <div v-if="device === 'mobile' || settingsStore.layout === 'left'" class="flex justify-start">
       <div class="flex justify-center items-center">
-        <el-tag>{{ userStore.$state.nickname }}</el-tag>
-        <div style="margin: 0 20px;">用户名</div>
+        <el-tag>{{ userStore.$state.roleName }}</el-tag>
+        <div style="margin: 0 20px;">{{ userStore.$state.nickname }}</div>
         <div style="margin-right: 20px;cursor: pointer;" @click="logout">退出</div>
       </div>
     </div>

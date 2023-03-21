@@ -20,61 +20,67 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="success" :icon="Plus" @click="handleAdd">新增</el-button>
+              <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
             </el-form-item>
           </el-form>
         </div>
 
         <el-card shadow="never">
           <el-table v-loading="loading" :data="userList">
-            <el-table-column label="公司名称" align="center" prop="company">
+            <el-table-column label="公司名称" align="center" min-width="100" prop="company">
               <template #default="scope">
                 <span style="color: #409eff;cursor: pointer;" @click="resetPassword(scope.row)">{{ scope.row.company }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="可用账号数/授权账号数" width="100" align="center" prop="validNum">
+            <el-table-column label="可用账号数/授权账号数" min-width="100" align="center" prop="validNum">
               <template #default="scope">
                 {{ scope.row.validNum }}/{{ scope.row.accountNum }}
               </template>
             </el-table-column>
 
-            <el-table-column label="近七日总DAU" width="120" align="center" prop="dailyCount">
+            <el-table-column label="近七日总DAU" min-width="120" align="center" prop="dailyCount">
               <template #default="scope">
                 <span>{{ scope.row.dailyCount['总计'] }}</span>
               </template>
             </el-table-column>
 
-            <el-table-column label="公司联系人/公司联系电话" width="120" align="center" prop="linkMan">
+            <el-table-column v-for="item in state.header" :key="item" :label="item" min-width="120" align="center" prop="dailyCount">
+              <template #default="scope">
+                <span>{{ scope.row.dailyCount[item] }}</span>
+              </template>
+            </el-table-column>
+
+            <el-table-column label="公司联系人/公司联系电话" min-width="120" align="center" prop="linkMan">
               <template #default="scope">
                 {{ scope.row.linkMan }}/{{ scope.row.linkPhone }}
               </template>
             </el-table-column>
 
-            <el-table-column label="地区权限" align="center" prop="province" width="120" />
-            <el-table-column label="失效日期" sortable align="center" prop="accessEndTime" width="120">
+            <el-table-column label="地区权限" align="center" prop="province" min-width="120" />
+            <el-table-column label="失效日期" sortable align="center" prop="accessEndTime" min-width="120">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatTime(scope.row.accessEndTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.accessEndTime) }}</span>
-                <el-tag class="ml-2" type="danger">剩余7天</el-tag>
+                <el-tag class="ml-2" type="danger">剩余{{ proxy.$filters.formatSeven(scope.row.accessEndTime) }}天</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="状态" align="center" prop="states">
               <template #default="scope">
-                <el-switch v-model="scope.row.states" :inactive-value="0" :active-value="1" @change="handleStatusChange(scope.row)" />
+                <el-switch v-model="scope.row.states" :inactive-value="0" :active-value="1" :before-change="beforeSwitchChange" @change="handleStatusChange(scope.row)" />
               </template>
             </el-table-column>
-            <el-table-column label="创建时间" sortable align="center" prop="createTime" width="180">
+            <el-table-column label="创建时间" sortable align="center" prop="createTime" min-width="180">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatTime(scope.row.createTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.createTime) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="更新时间" sortable align="center" prop="updateTime" width="180">
+            <el-table-column label="更新时间" sortable align="center" prop="updateTime" min-width="180">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatTime(scope.row.updateTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.updateTime) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="操作" align="left" fixed="right" width="200">
+            <el-table-column label="操作" align="left" fixed="right" min-width="120">
               <template #default="scope">
-                <el-button type="success" link @click="resetPassword(scope.row)">进入</el-button>
+                <el-button type="primary" link @click="resetPassword(scope.row)">进入</el-button>
                 <el-button type="primary" link @click="handleUpdate(scope.row)">编辑</el-button>
               </template>
             </el-table-column>
@@ -144,7 +150,8 @@ import {
   watchEffect,
   onMounted,
   getCurrentInstance,
-  toRefs
+  toRefs,
+  nextTick
 } from 'vue';
 import { getAreaJson } from '@/constant/area.js';
 
@@ -193,6 +200,7 @@ const dataFormRef = ref(ElForm); // 用户表单
 const importFormRef = ref(ElForm); // 导入表单
 
 const { proxy }: any = getCurrentInstance();
+const citylist = ref([]) as any;
 
 const state = reactive({
   // 遮罩层
@@ -212,8 +220,18 @@ const state = reactive({
   genderOptions: [] as any,
   // 角色下拉项
   roleOptions: [] as any,
+
   formData: {
-    states: 1
+    companyId: null,
+    companyType: 0,
+    company: '',
+    province: '',
+    accountNum: '',
+    accessBeginTime: null,
+    accessEndTime: null,
+    salesPerson: '',
+    linkMan: '',
+    linkPhone: ''
   } as any,
   queryParams: {
     pageNumber: 1,
@@ -234,7 +252,7 @@ const state = reactive({
       { required: true, message: '失效日期不能为空', trigger: 'blur' }
     ],
     salesPerson: [
-      { required: true, message: '商务经理不能为空', trigger: 'change' }
+      { required: true, message: '商务经理不能为空', trigger: 'blur' }
     ],
     linkMan: [
       { required: true, message: '公司联系人不能为空', trigger: 'blur' }
@@ -250,7 +268,8 @@ const state = reactive({
   } as DialogType,
   importFormData: {} as UserImportData,
   excelFile: undefined as any,
-  excelFilelist: [] as File[]
+  excelFilelist: [] as File[],
+  header: [] as any
 });
 
 const {
@@ -267,7 +286,8 @@ const {
   roleOptions,
   importDialog,
   importFormData,
-  excelFilelist
+  excelFilelist,
+  header
 } = toRefs(state);
 
 /**
@@ -285,7 +305,7 @@ function filterDeptNode(value: string, data: any) {
  */
 function handleDeptNodeClick(data: { [key: string]: any }) {
   state.queryParams.deptId = data.value;
-  handleQuery();
+  // handleQuery();
 }
 
 /**
@@ -306,22 +326,36 @@ async function getRoleOptions() {
   // });
 }
 
+let switchState = reactive({
+  switchStatus: false
+});
+const beforeSwitchChange = (val: any) => {
+  switchState.switchStatus = true;
+  return switchState.switchStatus;
+};
+
 /**
  * 用户状态change
  */
 function handleStatusChange(row: { [key: string]: any }) {
+  if (!switchState.switchStatus) return;
+  if (!row.company) return;
   const text = row.states === 1 ? '启用' : '停用';
-  // ElMessageBox.confirm('确认要' + text + '' + row.company + '用户吗?', '警告', {
-  //   confirmButtonText: '确定',
-  //   cancelButtonText: '取消',
-  //   type: 'warning'
-  // })
-  //   .then(() => {
-  //     deleteCompany(row.companyId);
-  //   })
-  //   .catch(() => {
-  //     row.states = row.states === 1 ? 0 : 1;
-  //   });
+  ElMessageBox.confirm('确认要' + text + '' + row.company + '用户吗?', '警告', {
+    confirmButtonText: '确定',
+    cancelButtonText: '取消',
+    type: 'warning'
+  })
+    .then(() => {
+      deleteCompany({ state: row.states, companyIds: [row.companyId] }).then(
+        () => {
+          ElMessage.success(text + '成功');
+        }
+      );
+    })
+    .catch(() => {
+      row.states = row.states === 1 ? 0 : 1;
+    });
 }
 
 /**
@@ -335,9 +369,14 @@ function handleQuery() {
     pageSize: state.queryParams.pageSize,
     states: state.queryParams.states ? 1 : 0
   }).then((data: any) => {
-    console.log('data---', data);
+    console.log('data----', data);
     state.userList = data.data.list;
     state.total = data.data.totalSize;
+    state.header = [];
+    for (let items in data.data.list[0].dailyCount) {
+      if (items !== '总计') state.header.push(items);
+    }
+
     state.loading = false;
   });
 }
@@ -367,21 +406,40 @@ function resetPassword(row: { [key: string]: any }) {
   });
 }
 
+const resetTemp = () => {
+  state.formData = {
+    companyId: null,
+    companyType: 0,
+    company: '',
+    province: citylist.value[0].name,
+    accountNum: '',
+    accessBeginTime: null,
+    accessEndTime: null,
+    salesPerson: '',
+    linkMan: '',
+    linkPhone: ''
+  };
+};
+
 /**
  * 添加用户
  **/
-async function handleAdd() {
+function handleAdd() {
   state.dialog = {
     title: '添加企业',
     visible: true
   };
+  nextTick(() => {
+    resetTemp();
+    dataFormRef.value.resetFields();
+    dataFormRef.value.clearValidate();
+  });
 }
 
 /**
  * 修改用户
  **/
 async function handleUpdate(row: { [key: string]: any }) {
-  console.log('row.userId----', row.companyId);
   detailCompany({ companyId: row.companyId }).then((res: any) => {
     formData.value = res.data;
     dialog.value = {
@@ -460,8 +518,6 @@ function closeDialog() {
   dataFormRef.value.clearValidate();
   formData.value.id = undefined;
 }
-
-const citylist = ref([]) as any;
 
 onMounted(() => {
   citylist.value = getAreaJson();
