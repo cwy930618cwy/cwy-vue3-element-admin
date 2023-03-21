@@ -19,7 +19,7 @@
               <el-button :icon="Refresh" @click="resetQuery">重置</el-button>
             </el-form-item>
 
-            <el-form-item>
+            <el-form-item style="display: flex;">
               <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
             </el-form-item>
           </el-form>

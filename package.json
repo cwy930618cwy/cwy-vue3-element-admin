@@ -3,6 +3,7 @@
   "version": "1.2.0",
   "scripts": {
     "dev": "vite serve --mode development",
+    "build": "vue-tsc --noEmit && vite build --mode development",
     "build:prod": "vue-tsc --noEmit && vite build --mode production",
     "serve": "vite preview",
     "lint": "eslint src/**/*.{ts,js,vue} --fix",

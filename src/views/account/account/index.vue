@@ -48,13 +48,15 @@
               <el-button type="success" :icon="Plus" @click="handleAllAdd">批量启用</el-button>
             </el-form-item> -->
 
-            <el-form-item>
-              <el-button type="primary" :icon="Plus" @click="handleAllDisable">批量禁用</el-button>
-            </el-form-item>
+            <div style="display: flex;">
+              <el-form-item>
+                <el-button type="primary" :icon="Plus" @click="handleAllDisable">批量禁用</el-button>
+              </el-form-item>
 
-            <el-form-item>
-              <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
-            </el-form-item>
+              <el-form-item>
+                <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
+              </el-form-item>
+            </div>
           </el-form>
         </div>
 

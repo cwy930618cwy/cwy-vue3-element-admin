@@ -23,22 +23,22 @@
 
         <el-card shadow="never">
           <el-table v-loading="loading" :data="userList">
-            <el-table-column label="姓名" width="120" align="center" prop="userName" />
-            <el-table-column label="所属公司名称" width="120" align="center" prop="company" />
-            <el-table-column label="手机号" width="120" align="center" prop="phoneNumber" />
-            <el-table-column label="职务" width="120" align="center" prop="companyPost" />
-            <el-table-column label="申请时间" align="center" prop="createTime" width="180">
+            <el-table-column label="姓名" align="center" prop="userName" />
+            <el-table-column label="所属公司名称" align="center" prop="company" />
+            <el-table-column label="手机号" align="center" prop="phoneNumber" />
+            <el-table-column label="职务" align="center" prop="companyPost" />
+            <el-table-column label="申请时间" align="center" prop="createTime">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatTime(scope.row.createTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.createTime) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="跟进人" width="120" align="center" prop="followName" />
-            <el-table-column label="跟进时间" align="center" prop="handleTime" width="180">
+            <el-table-column label="跟进人" align="center" prop="followName" />
+            <el-table-column label="跟进时间" align="center" prop="handleTime">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatTime(scope.row.handleTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.handleTime) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="备注" width="120" align="center" prop="desc" />
+            <el-table-column label="备注" align="center" prop="desc" />
 
             <el-table-column label="操作" align="left" fixed="right" width="100">
               <template #default="scope">

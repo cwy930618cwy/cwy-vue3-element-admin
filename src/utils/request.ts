@@ -42,7 +42,7 @@ service.interceptors.response.use(
     const { code, msg } = response.data;
     if (code === '0') {
       return response.data;
-    } else if (code === '30000') {
+    } else if (code === '30000' || code === '30001') {
         ElMessageBox.confirm('当前页面已失效，请重新登录', '提示', {
           confirmButtonText: 'OK',
           type: 'warning'
@@ -67,7 +67,7 @@ service.interceptors.response.use(
     if (error.response.data) {
       const { code, msg } = error.response.data;
       // token 过期,重新登录
-      if (code === '30000') {
+      if (code === '30000' || code === '30001') {
         ElMessageBox.confirm('当前页面已失效，请重新登录', '提示', {
           confirmButtonText: 'OK',
           type: 'warning'
