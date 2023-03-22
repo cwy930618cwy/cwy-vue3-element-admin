@@ -5,7 +5,7 @@ const matchs: any = {
       name: "company",
       meta: {
         title: "企业管理",
-        icon: "center_icon"
+        icon: "company"
       }
     },
     2: {
@@ -14,7 +14,7 @@ const matchs: any = {
       name: "account",
       meta: {
         title: "账号管理",
-        icon: "center_icon"
+        icon: "account"
       }
     },
     3: {
@@ -23,7 +23,7 @@ const matchs: any = {
       name: "apply",
       meta: {
         title: "账号申请",
-        icon: "center_icon"
+        icon: "apply"
       }
     }
 }

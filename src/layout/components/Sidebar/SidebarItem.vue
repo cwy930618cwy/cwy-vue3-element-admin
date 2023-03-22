@@ -61,25 +61,23 @@ function resolvePath(routePath: string) {
   }
   return path.resolve(props.basePath, routePath);
 }
+
+const logo = ref();
+
+function resolveImg(icon: any) {
+  return new URL(`../../../assets/sidebar/${icon}.png`, import.meta.url).href;
+}
 </script>
 <template>
   <div v-if="!item.meta || !item.meta.hidden">
-    <template
-      v-if="
+    <template v-if="
         hasOneShowingChild(item.children, item) &&
         (!onlyOneChild.children || onlyOneChild.noShowingChildren) &&
         (!item.meta || !item.meta.alwaysShow)
-      "
-    >
+      ">
       <app-link v-if="onlyOneChild.meta" :to="resolvePath(onlyOneChild.path)">
-        <el-menu-item
-          :index="resolvePath(onlyOneChild.path)"
-          :class="{ 'submenu-title-noDropdown': !isNest }"
-        >
-          <svg-icon
-            v-if="onlyOneChild.meta && onlyOneChild.meta.icon"
-            :icon-class="onlyOneChild.meta.icon"
-          />
+        <el-menu-item :index="resolvePath(onlyOneChild.path)" :class="{ 'submenu-title-noDropdown': !isNest }">
+          <img class="sidebar_image" v-if="onlyOneChild.meta && onlyOneChild.meta.icon" :src="resolveImg(onlyOneChild.meta.icon)" alt="">
           <template #title>
             {{ generateTitle(onlyOneChild.meta.title) }}
           </template>
@@ -87,25 +85,32 @@ function resolvePath(routePath: string) {
       </app-link>
     </template>
 
-    <el-sub-menu v-else :index="resolvePath(item.path)" popper-append-to-body>
+    <el-sub-menu v-else :index=" resolvePath(item.path)" popper-append-to-body>
       <!-- popper-append-to-body -->
       <template #title>
-        <svg-icon
-          v-if="item.meta && item.meta.icon"
-          :icon-class="item.meta.icon"
-        />
+        <svg-icon v-if="item.meta && item.meta.icon" :icon-class="item.meta.icon" />
         <span v-if="item.meta && item.meta.title">{{
           generateTitle(item.meta.title)
         }}</span>
       </template>
 
-      <sidebar-item
-        v-for="child in item.children"
-        :key="child.path"
-        :item="child"
-        :is-nest="true"
-        :base-path="resolvePath(child.path)"
-      />
+      <sidebar-item v-for="child in item.children" :key="child.path" :item="child" :is-nest="true" :base-path="resolvePath(child.path)" />
     </el-sub-menu>
   </div>
 </template>
+
+<style lang="scss" scoped>
+.hideSidebar {
+  .sidebar_image {
+    height: 22px;
+    width: 22px;
+  }
+}
+.openSidebar {
+  .sidebar_image {
+    height: 30px;
+    width: 30px;
+    margin-right: 20px;
+  }
+}
+</style>
