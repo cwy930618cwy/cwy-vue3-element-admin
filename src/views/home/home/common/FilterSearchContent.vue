@@ -44,8 +44,8 @@
 </template>
 
 <script>
-import { exportApi } from "@/http/api";
-import { exprotExcal } from "@/util/shared";
+// import { exportApi } from "@/http/api";
+import { exprotExcal } from "@/utils/shared";
 
 const BaseUrl = process.env.VUE_APP_API_BASE + "/v1/export/fileAnalysis";
 
@@ -118,15 +118,15 @@ export default {
     },
     exportTemplate() {
       this.exportLoading = true;
-      exportApi
-        .downloadTemplate()
-        .then(() => { })
-        .catch((error) => {
-          exprotExcal("搜索关键词导入模板", error);
-        })
-        .finally(() => {
-          this.exportLoading = false;
-        });
+      // exportApi
+      //   .downloadTemplate()
+      //   .then(() => { })
+      //   .catch((error) => {
+      //     exprotExcal("搜索关键词导入模板", error);
+      //   })
+      //   .finally(() => {
+      //     this.exportLoading = false;
+      //   });
     },
     emitChange(op) {
       const params = {

@@ -35,7 +35,7 @@ export function exprotExcal(dowLoadFileName, result) {
     if ("download" in document.createElement("a")) {
         // 非IE下载
         if (brower === "Edge") {
-            navigator.msSaveBlob(blob, fileName);
+            (navigator as any).msSaveBlob(blob, fileName);
             return;
         }
         const elink = document.createElement("a");
@@ -49,7 +49,7 @@ export function exprotExcal(dowLoadFileName, result) {
         document.body.removeChild(elink);
     } else {
         // IE10+下载
-        navigator.msSaveBlob(blob, fileName);
+        (navigator as any).msSaveBlob(blob, fileName);
     }
 }
 

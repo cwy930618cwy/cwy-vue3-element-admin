@@ -8,8 +8,8 @@
 </template>
 
 <script>
-import FilterCell from "@/components/Filter/FilterCell";
-import FilterRadio from "@/components/Filter/FilterRadio";
+import FilterCell from "@/components/Filter/FilterCell.vue";
+import FilterRadio from "@/components/Filter/FilterRadio.vue";
 export default {
     name: "FilterIndustry",
     props: {},
