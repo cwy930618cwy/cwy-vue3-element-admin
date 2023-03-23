@@ -9,3 +9,9 @@ const appStore = useAppStore();
     <router-view />
   </el-config-provider>
 </template>
+
+<style lang="scss" scope>
+@import './assets/css/common';
+@import './assets/css/fastflex.scss';
+@import './assets/css/element.scss';
+</style>

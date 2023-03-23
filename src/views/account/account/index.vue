@@ -48,15 +48,13 @@
               <el-button type="success" :icon="Plus" @click="handleAllAdd">批量启用</el-button>
             </el-form-item> -->
 
-            <div style="display: flex;">
-              <el-form-item>
-                <el-button type="primary" :icon="Plus" @click="handleAllDisable">批量禁用</el-button>
-              </el-form-item>
+            <el-form-item>
+              <el-button type="primary" :icon="Plus" @click="handleAllDisable">批量禁用</el-button>
+            </el-form-item>
 
-              <el-form-item>
-                <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
-              </el-form-item>
-            </div>
+            <el-form-item>
+              <el-button type="primary" :icon="Plus" @click="handleAdd">新增账号</el-button>
+            </el-form-item>
           </el-form>
         </div>
 
@@ -516,7 +514,7 @@ const resetTemp = () => {
  **/
 async function handleAdd() {
   state.dialog = {
-    title: '添加企业',
+    title: '添加账户',
     visible: true
   };
   await getDeptOptions(userStore.$state.province);
@@ -535,7 +533,7 @@ async function handleUpdate(row: { [key: string]: any }) {
   detailAccount({ userId: row.userId }).then((res: any) => {
     formData.value = res.data;
     dialog.value = {
-      title: '修改企业',
+      title: '修改账户',
       visible: true
     };
   });

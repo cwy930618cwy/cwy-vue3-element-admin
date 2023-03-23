@@ -67,6 +67,14 @@ export const usePermissionStore = defineStore('permission', () => {
     return new Promise<RouteRecordRaw[]>((resolve, reject) => {
       listRoutes()
         .then(response => {
+          response.data.push(
+            {
+              childPermissionVo: [],
+              permission: "首页",
+              permissionId: 4,
+              sort: 4
+            }
+          )
           const asyncRoutes = response.data;
           const accessedRoutes: any = filterAsyncRoutes(asyncRoutes, []);
           setRoutes(accessedRoutes);

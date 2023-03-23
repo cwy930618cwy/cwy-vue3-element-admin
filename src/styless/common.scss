@@ -1,0 +1,303 @@
+.el-dialog__header {
+    background: rgb(250, 250, 250);
+    margin-right: 0;
+}
+.el-message-box {
+    padding: 10px 0 30px 0;
+}
+.el-table {
+    border: 1px solid #ebeef5;
+    // padding: 20px;
+    box-shadow: 0 1px 4px rgb(0 21 41 / 20%);
+}
+.el-select-dropdown__item{
+    &:hover{
+        background: rgb(223, 98, 80, 0.06);
+    }
+}
+
+.filter-container {
+    padding: 20px;
+    box-shadow: 0 1px 4px rgb(0 21 41 / 20%);
+}
+
+.el-dialog__body {
+    max-height: 400px;
+    overflow-y: scroll;
+}
+
+// 通用滚动条样式
+::-webkit-scrollbar
+{
+    height: 6px;
+    width: 6px;
+}
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track
+{
+    background-color: #fff;
+}
+::-webkit-scrollbar-track:hover {
+    background-color: #F5F6F8;
+}
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb:horizontal
+{
+    height: 6px;
+    background-color: rgba(4,24,73,0.15);
+}
+::-webkit-scrollbar-thumb:vertical
+{
+    width: 6px;
+    background-color: rgba(4,24,73,0.15);
+}
+
+
+.el-overlay-dialog{
+  z-index: 100 !important;
+  display: flex;
+  align-items: center;
+  background: rgba(0, 0, 0, 0.1);
+  //表格没有头部的样式
+  .modal-title-hide{
+    .el-alert--error{
+      top:0 !important;
+    }
+    .el-dialog__header{
+      display: none
+    }
+    .el-dialog__body{
+      .el-icon-close{
+        font-size: 18px;
+        float: right;
+        margin: 12px 12px 0 0;
+        cursor: pointer;
+      }
+      .modal-body{
+        padding:30px 55px !important;
+      }
+      .prompt-modal-body div{
+        width:100%;
+      }
+    }
+  }
+  .el-dialog{
+    margin-top: 0 !important;
+    .el-dialog__header{
+      text-align: left;
+      background: #F1F2F6;
+      font-weight: normal;
+      padding:0 20px;
+      height: 50px;
+      line-height: 50px;
+      font-size: 14px;
+      color: #535355;
+      .el-dialog__headerbtn{
+        top: 0;
+      }
+      .el-dialog__title {
+        text-align: left;
+        background: #F1F2F6;
+        height: 50px;
+        line-height: 50px;
+        font-size: 14px;
+        color: #535355;
+        padding-left: 0;
+        font-weight: normal;
+        i {
+          float: right;
+          font-size: 22px;
+          color: #606068;
+          margin-right: 0;
+          margin-top: 13px;
+          cursor: pointer;
+        }
+      }
+    }
+    .el-dialog__body{
+      padding:30px;
+      //弹框宽度默认有4个
+      // 提示类弹框宽度或只有一个字段为380
+      // 一列宽度为480
+      //两列宽度为590或600,勿删还有一个人员详情页面在使用
+      //弹框套表格类宽度为660
+
+      .modal-body {
+        text-align: left;
+        position: relative;
+        overflow-y: auto;
+        overflow-x: hidden;
+        min-height:50px;
+        max-height: 400px;
+        min-width: 320px;
+        padding: 30px 20px;
+        // .el-input{
+        //   min-width: 180px;
+        // }
+        a.title{
+          cursor: pointer;
+          color: #2196F3;
+          display: inline-block;
+          font-size:14px;
+          text-decoration: underline;
+        }
+        //输入框样式
+        .textarea {
+          position: relative;
+          width: 100%;
+          height: 103px;
+          textarea {
+            background: #FFFFFF;
+            border: 1px solid #EBEBEB;
+            width: 100%;
+            height: 103px;
+            overflow-y: auto;
+            resize: none;
+            padding-left: 5px;
+            line-height: 18px;
+            font-size: 12px;
+            color: #222;
+            border-radius:2px;
+            &:focus {
+              background: #FFF;
+              border: 1px solid #2196F3;
+              box-shadow: 0 0 0 0 #2196F3;
+            }
+          }
+          span {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: #A8A8AD;
+            font-family: MicrosoftYaHei;
+      
+            b {
+              font-weight: normal;
+              color: #222;
+      
+              &.b-red {
+                color: #ED6F56;
+              }
+            }
+          }
+        }
+        .contract-content{
+          li{
+            background: #fff;
+            border-bottom:1px dashed #ebebeb;
+            padding: 0;
+          }
+        }
+      }
+    }
+    .el-dialog__footer{
+      .dialog-footer {
+        text-align: right;
+        clear: both;
+        padding:0;
+        .addbank{
+          float: left;
+          cursor: pointer;
+          color: #2196F3;
+        }
+        button {
+          margin-left: 10px !important;
+          margin-left: 10px;
+          cursor: pointer;
+          vertical-align: top;
+          font-weight: normal;
+          padding: 0 26px;
+          height: 30px;
+          line-height: 30px;
+          font-size: 12px;
+          min-width:100px;
+        }
+      
+        // button.btns {
+        //   color: #FFF;
+        //   background: #2196F3;
+        //   &:hover {
+        //     background: #63BAFF;
+        //   }
+        //   &:active {
+        //     background: #2288DA;
+        //   }
+        // }
+      
+        // button.red-btns {
+        //   color: #FFF;
+        //   background: #FF5D5D;
+        //   &:hover {
+        //     background: #FF9A9A;
+        //   }
+        //   &:active {
+        //     background: #DE4C4C;
+        //   }
+        // }
+      
+        button.cancle {
+          width: 77px;
+          color: rgb(237, 127, 102);
+          border-color: rgb(237, 127, 102);
+          &:hover {
+            background: none !important;
+          }
+          &:active {
+            background: none !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+.el-button--primary {
+  &:hover {
+    border-color: #df6250 !important;
+    background: #df6250 !important;
+  }
+  &:active {
+    border-color: #df6250 !important;
+    background: #df6250 !important;
+  }
+}
+
+.create {
+  margin-left: 10px;
+  width: 96px;
+  background: rgb(64, 158, 255);
+  border-color: rgb(64, 158, 255);
+  &:hover {
+        color: white !important;
+        background: rgb(64, 158, 255) !important;
+        border-color: rgb(64, 158, 255) !important;
+    }
+    &:active {
+        color: white !important;
+        background: rgb(64, 158, 255) !important;
+        border-color: rgb(64, 158, 255) !important;
+    }
+
+}
+
+.default {
+    color: #606266 !important;
+    background: none !important;
+    border-color: #dcdfe6 !important;
+    &:hover {
+        color: #606266 !important;
+        background: none !important;
+        border-color: #dcdfe6 !important;
+    }
+    &:active {
+        color: #606266 !important;
+        background: none !important;
+        border-color: #dcdfe6 !important;
+    }
+}
+
+.el-message-box {
+    width: 360px;
+    height: 160px;
+}

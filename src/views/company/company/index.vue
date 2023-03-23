@@ -19,15 +19,15 @@
               <el-button :icon="Refresh" @click="resetQuery">重置</el-button>
             </el-form-item>
 
-            <el-form-item style="display: flex;">
-              <el-button type="primary" :icon="Plus" @click="handleAdd">新增</el-button>
+            <el-form-item>
+              <el-button type="primary" :icon="Plus" @click="handleAdd">新增企业</el-button>
             </el-form-item>
           </el-form>
         </div>
 
         <el-card shadow="never">
           <el-table v-loading="loading" :data="userList">
-            <el-table-column label="公司名称" align="center" min-width="100" prop="company">
+            <el-table-column label="公司名称" show-overflow-tooltip align="center" min-width="200" prop="company">
               <template #default="scope">
                 <span style="color: #409eff;cursor: pointer;" @click="resetPassword(scope.row)">{{ scope.row.company }}</span>
               </template>
@@ -50,7 +50,7 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="公司联系人/公司联系电话" min-width="120" align="center" prop="linkMan">
+            <el-table-column label="公司联系人/公司联系电话" show-overflow-tooltip min-width="120" align="center" prop="linkMan">
               <template #default="scope">
                 {{ scope.row.linkMan }}/{{ scope.row.linkPhone }}
               </template>
