@@ -14,7 +14,7 @@
         <span class="svg-container">
           <svg-icon icon-class="user" />
         </span>
-        <el-input ref="username" v-model="loginData.username" :placeholder="$t('login.username')" name="username" type="text" tabindex="1" auto-complete="on" />
+        <el-input ref="username" v-model="loginData.username" :placeholder="$t('login.username')" name="username" type="text" tabindex="1" auto-complete="off" />
       </el-form-item>
 
       <el-tooltip :disabled="capslockTooltipDisabled" content="Caps lock is On" placement="right">
@@ -22,7 +22,7 @@
           <span class="svg-container">
             <svg-icon icon-class="password" />
           </span>
-          <el-input ref="passwordRef" :key="passwordType" v-model="loginData.password" :type="passwordType" placeholder="Password" name="password" tabindex="2" auto-complete="on" @keyup="checkCapslock" @blur="capslockTooltipDisabled = true" @keyup.enter="handleLogin" />
+          <el-input ref="passwordRef" :key="passwordType" v-model="loginData.password" :type="passwordType" placeholder="Password" name="password" tabindex="2" auto-complete="off" @keyup="checkCapslock" @blur="capslockTooltipDisabled = true" @keyup.enter="handleLogin" />
           <span class="show-pwd" @click="showPwd">
             <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
           </span>
@@ -81,8 +81,8 @@ const state = reactive({
   redirect: '',
   loginData: {
     avoidTheLogin: 0,
-    username: 'cxhtest', // admin
-    password: '123456' // 123456
+    username: '', // admin
+    password: '' // 123456
   } as LoginData,
   loginRules: {
     username: [{ required: true, trigger: 'blur', message: '请输入用户名' }],

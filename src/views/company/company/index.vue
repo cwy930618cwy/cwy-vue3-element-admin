@@ -60,7 +60,7 @@
             <el-table-column label="失效日期" sortable align="center" prop="accessEndTime" min-width="120">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatTime(scope.row.accessEndTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.accessEndTime) }}</span>
-                <el-tag class="ml-2" type="danger">剩余{{ proxy.$filters.formatSeven(scope.row.accessEndTime) }}天</el-tag>
+                <el-tag class="ml-2" v-if="proxy.$filters.formatSeven(scope.row.accessEndTime) > 30" type="danger">剩余{{ proxy.$filters.formatSeven(scope.row.accessEndTime) }}天</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="状态" align="center" prop="states">
@@ -109,7 +109,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="授权账号数" prop="accountNum">
-          <el-input v-model="formData.accountNum" type="number" placeholder="请输入授权账号数" maxlength="11" />
+          <el-input v-model="formData.accountNum" placeholder="请输入授权账号数" maxlength="11" />
         </el-form-item>
         <el-form-item label="开始日期和失效日期" prop="accessEndTime">
           <el-date-picker v-model="formData.accessBeginTime" type="date" placeholder="请输入生效日期">
@@ -255,15 +255,6 @@ const state = reactive({
     ],
     accessEndTime: [
       { required: true, message: '失效日期不能为空', trigger: 'blur' }
-    ],
-    salesPerson: [
-      { required: true, message: '商务经理不能为空', trigger: 'blur' }
-    ],
-    linkMan: [
-      { required: true, message: '公司联系人不能为空', trigger: 'blur' }
-    ],
-    linkPhone: [
-      { required: true, message: '公司联系电话不能为空', trigger: 'blur' }
     ]
   },
 

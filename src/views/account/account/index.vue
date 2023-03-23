@@ -135,9 +135,7 @@
           <el-input v-model="formData.linkMan" placeholder="请输入姓名" />
         </el-form-item>
         <el-form-item label="地区权限" prop="province">
-          <el-select v-model="formData.province" filterable placeholder="请选择">
-            <el-option v-for="item in citylist" :key="item.id" :label="item.name" :value="item.name" />
-          </el-select>
+          <el-cascader :options="citylist" style="width: 500px;" v-model="totalcity" :props="{ multiple: true, value: 'name', label: 'name', checkStrictly: true }" clearable @change="provinceChange"></el-cascader>
         </el-form-item>
         <el-form-item label="手机号" prop="linkPhone">
           <el-input v-model="formData.linkPhone" placeholder="请输入手机号" maxlength="50" />
@@ -311,6 +309,27 @@ const {
   excelFilelist
 } = toRefs(state);
 
+const province = ref([]);
+const city = ref([]);
+const totalcity = ref([]);
+
+function provinceChange(citys: any) {
+  console.log('citys----', citys);
+  citys.forEach((item: any) => {
+    if (province.value.indexOf(item[0]) === -1) {
+      province.value.push(item[0]);
+    }
+    if (item[1] && city.value.indexOf(item[1]) === -1) {
+      city.value.push(item[1]);
+    }
+  });
+  // state.formData.province = province;
+  // state.formData.city = city;
+
+  console.log('state.formData---', province.value);
+  console.log('state.formData---', city.value);
+}
+
 /**
  * 部门筛选
  */
@@ -425,7 +444,6 @@ function resetQuery() {
  * 行选中
  */
 function handleSelectionChange(selection: any) {
-  console.log('selection----', selection);
   state.ids = selection.map((item: any) => item.userId);
 }
 
@@ -433,8 +451,6 @@ function handleSelectionChange(selection: any) {
  * 批量启用
  */
 function handleAllAdd() {
-  console.log('state.ids---', state.ids);
-  console.log('掉接口-------');
   // state.ids = selection.map((item: any) => item.userId);
   // toggleSelection(userList.value);
 }
@@ -495,8 +511,6 @@ function resetPassword(row: { [key: string]: any }) {
 }
 
 const resetTemp = () => {
-  console.log('userStore.$state.company----', userStore.$state.company);
-  console.log('citylist----', citylist);
   state.formData = {
     accountNo: null,
     company: userStore.$state.roleId === 1 ? '' : userStore.$state.company,
@@ -532,6 +546,15 @@ async function handleAdd() {
 async function handleUpdate(row: { [key: string]: any }) {
   detailAccount({ userId: row.userId }).then((res: any) => {
     formData.value = res.data;
+
+    formData.value.province = ['安徽'];
+    formData.value.city = ['安庆'];
+
+    totalcity.value = formData.value.province.concat(formData.value.city);
+
+    province.value = formData.value.province;
+    city.value = formData.value.city;
+    getDeptOptions(userStore.$state.province);
     dialog.value = {
       title: '修改账户',
       visible: true
@@ -600,6 +623,9 @@ function closeDialog() {
  * 获取部门下拉项
  */
 async function getDeptOptions(province: any) {
+  // formData.value.province = ['安徽']
+  // formData.value.city = ['安庆']
+
   getUserArea().then((response: any) => {
     if (province === '全国') {
       citylist.value = response.data;
@@ -614,6 +640,7 @@ async function getDeptOptions(province: any) {
         }
       });
     }
+    formData.value.province = ['安徽'];
   });
 }
 
@@ -634,9 +661,7 @@ function selectCompany(query: any) {
   });
 }
 
-function handleSelect(item: any) {
-  console.log('item-----', item);
-}
+function handleSelect(item: any) {}
 
 /**
  * 修改用户
