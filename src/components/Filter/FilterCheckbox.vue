@@ -106,8 +106,8 @@ export default {
       &-checked {
         position: relative;
         border-radius: 4px;
-        border-color: #df6250;
-        color: #df6250;
+        border-color: #7263ce;
+        color: #7263ce;
       }
       &:hover {
         cursor: pointer;
@@ -124,7 +124,7 @@ export default {
   color: rgb(161 161 161);
   &:hover {
     cursor: pointer;
-    color: #df6250;
+    color: #7263ce;
   }
   &-collapse {
     transition: all 300ms;

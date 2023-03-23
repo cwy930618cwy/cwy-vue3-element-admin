@@ -1,7 +1,7 @@
 <template>
   <FilterCell title="电话筛选：">
     <FilterCascader ref="FilterCascader" @change="searchChange" :data="AreaJsonList"></FilterCascader>
-    <el-checkbox v-model="checked">排除固定电话</el-checkbox>
+    <!-- <el-checkbox v-model="checked">排除固定电话</el-checkbox> -->
   </FilterCell>
 </template>
 
@@ -17,8 +17,7 @@ export default {
   inject: ["pro_setParams"],
   data() {
     return {
-      AreaJson: [],
-      checked: true
+      AreaJson: []
     };
   },
   computed: {
@@ -46,6 +45,7 @@ export default {
           echoText += `:${currentItemE.children.map((r) => r.name)}`;
         }
       }
+
       const params = {
         refNameRoot: this.$options.name,
         data,

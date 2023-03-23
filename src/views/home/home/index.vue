@@ -2,7 +2,6 @@
   <div class="main-container2">
     <FilterKeyword ref="FilterKeyword"></FilterKeyword>
     <div class="container-filter">
-      <h2>招标采购</h2>
       <!--  筛选条件  -->
       <FilterEcho ref="FilterEcho" @clear="clearSelected"></FilterEcho>
       <!--  业务地区  -->
@@ -15,26 +14,8 @@
       <FilterProcureCompany ref="FilterProcureCompany"></FilterProcureCompany>
       <!--  信息类型  -->
       <FilterTypeBidding ref="FilterTypeBidding"></FilterTypeBidding>
-      <!--  筛选金额  -->
-      <!-- <FilterProjectMoney ref="FilterProjectMoney"></FilterProjectMoney> -->
-      <!--  行业分类  -->
-      <!-- <FilterIndustry ref="FilterIndustry"></FilterIndustry> -->
       <el-button type="primary" @click="starSearch">搜索</el-button>
       <el-button type="primary" @click="onClearAll">重置</el-button>
-      <div v-show="isCollapseShow">
-        <!--  搜索模式  -->
-        <!-- <FilterModel ref="FilterModel"></FilterModel> -->
-        <!--  排除词  -->
-        <!-- <FilterKeywordOut ref="FilterKeywordOut"></FilterKeywordOut> -->
-        <!--  相关词  -->
-        <!-- <FilterKeywordRelated ref="FilterKeywordRelated"></FilterKeywordRelated> -->
-        <!--  搜索内容  -->
-        <!-- <FilterSearchContent ref="FilterSearchContent"></FilterSearchContent> -->
-      </div>
-      <!-- <div v-show="loading" class="search-loading fc_c fj_c">
-        <img src="@/assets/img/loading.gif" alt="" />
-        <span>加载中…</span>
-      </div> -->
     </div>
 
     <div class="body-content fr">
@@ -381,7 +362,7 @@ export default {
     box-shadow: 0px 2px 4px 0px rgb(0 0 0 / 5%);
     h2 {
       font-size: 24px;
-      color: #df6250;
+      color: #7263ce;
       font-weight: 700;
       margin-bottom: 20px;
     }

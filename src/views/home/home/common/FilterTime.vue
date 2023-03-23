@@ -147,8 +147,8 @@ export default {
       padding: 0px 8px;
       margin-right: 12px;
       &-active {
-        color: #df6250;
-        border: 1px solid #df6250;
+        color: #7263ce;
+        border: 1px solid #7263ce;
         border-radius: 4px;
       }
       &:hover {

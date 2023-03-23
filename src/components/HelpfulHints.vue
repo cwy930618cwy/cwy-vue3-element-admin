@@ -46,7 +46,7 @@ export default {
     &::before {
       content: '';
       display: inline-block;
-      background-color: #df6250;
+      background-color: #7263ce;
       width: 3px;
       height: 14px;
       border-radius: 2px;

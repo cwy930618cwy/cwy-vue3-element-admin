@@ -123,12 +123,12 @@ export default {
       //&:hover {
       //    cursor: not-allowed;
       //}
-      color: #df6250;
+      color: #7263ce;
       &:hover {
         cursor: pointer;
       }
       //&-checked {
-      //    //color: #df6250;
+      //    //color: #7263CE;
       //}
       span {
         padding-left: 4px;

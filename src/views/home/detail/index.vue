@@ -40,8 +40,8 @@
     height: 28px;
     &:hover,
     &:focus {
-      background-color: #df6250;
-      border: 1px solid #df6250;
+      background-color: #7263ce;
+      border: 1px solid #7263ce;
       color: #fff;
     }
     .el-icon {
@@ -75,7 +75,7 @@
       display: block;
       width: 3px;
       border-radius: 20px;
-      background-color: #df6250;
+      background-color: #7263ce;
       margin-right: 6px;
     }
   }
@@ -86,7 +86,7 @@
 .more {
   display: inline-block;
   margin-left: 10px;
-  color: #df6250;
+  color: #7263ce;
   cursor: pointer;
   .el-icon {
     margin-right: 5px;
@@ -116,7 +116,7 @@
               <Clock />
             </el-icon>发布时间：{{ tableData.infoPublishTime }}
           </p>
-          <el-button color="#df6250" v-loading.fullscreen="exportLoading" element-loading-text="正在导出中..." @click="downLoadDetail">
+          <el-button color="#7263CE" v-loading.fullscreen="exportLoading" element-loading-text="正在导出中..." @click="downLoadDetail">
             <el-icon>
               <Download />
             </el-icon>导出

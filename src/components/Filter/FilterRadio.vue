@@ -66,8 +66,8 @@ export default {
       &-checked {
         position: relative;
         border-radius: 4px;
-        border-color: #df6250;
-        color: #df6250;
+        border-color: #7263ce;
+        color: #7263ce;
       }
       &:hover {
         cursor: pointer;

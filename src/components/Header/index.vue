@@ -100,7 +100,7 @@ export default {
       // 将匹配的字符添加一个‘高亮’的标签外表
       let str = this.keywords;
       const regEscape = (v) => v.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
-      return originStr.replace(new RegExp(regEscape(str), "ig"), '<span style="color: #df6250">$&</span>');
+      return originStr.replace(new RegExp(regEscape(str), "ig"), '<span style="color: #7263CE">$&</span>');
     },
     clearKeywords() {
       this.$router.push({

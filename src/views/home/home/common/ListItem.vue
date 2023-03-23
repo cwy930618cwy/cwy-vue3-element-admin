@@ -243,19 +243,19 @@ export default {
 <style lang="scss" scoped>
 .el-button {
   height: 28px;
-  color: #df6250;
-  border-color: #df6250;
+  color: #7263ce;
+  border-color: #7263ce;
 }
 .el-button:focus,
 .el-button:hover {
   background-color: #fff;
-  border-color: #df6250;
+  border-color: #7263ce;
 }
 .el-radio-button__inner {
   font-size: 12px;
 }
 .el-radio-button__original-radio:checked + .el-radio-button__inner {
-  color: #df6250;
+  color: #7263ce;
   background-color: #fff;
 }
 .el-pagination {
@@ -270,15 +270,15 @@ export default {
     overflow: hidden;
     color: #999;
     &:hover {
-      color: #df6250;
+      color: #7263ce;
     }
   }
   // .el-pager li.is-active + li {
   //     border: 1px solid #dddddd;
   // }
   .el-pager li.is-active {
-    border-color: #df6250;
-    color: #df6250;
+    border-color: #7263ce;
+    color: #7263ce;
   }
 }
 </style>
@@ -324,12 +324,12 @@ export default {
     font-size: 12px;
     border-radius: 4px;
     font-weight: 400;
-    border: 1px solid #df6250;
+    border: 1px solid #7263ce;
     background: #fff;
-    color: #df6250;
+    color: #7263ce;
     &:hover {
       cursor: pointer;
-      background-color: #df6250;
+      background-color: #7263ce;
       color: #fff;
     }
     &-dis {
