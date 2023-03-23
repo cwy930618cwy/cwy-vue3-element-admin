@@ -40,7 +40,6 @@ export default {
     },
   },
   mounted() {
-    console.log('this-----, ', this.$refs.Header)
     const q = this.$route.query;
     const params = {
       searchRange: q.searchRange === undefined ? "0" : q.searchRange,

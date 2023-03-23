@@ -314,7 +314,6 @@ const city = ref([]);
 const totalcity = ref([]);
 
 function provinceChange(citys: any) {
-  console.log('citys----', citys);
   citys.forEach((item: any) => {
     if (province.value.indexOf(item[0]) === -1) {
       province.value.push(item[0]);
@@ -323,11 +322,8 @@ function provinceChange(citys: any) {
       city.value.push(item[1]);
     }
   });
-  // state.formData.province = province;
-  // state.formData.city = city;
-
-  console.log('state.formData---', province.value);
-  console.log('state.formData---', city.value);
+  state.formData.province = province;
+  state.formData.city = city;
 }
 
 /**

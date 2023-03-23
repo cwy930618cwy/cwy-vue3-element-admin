@@ -13,7 +13,7 @@
           </template>
           <template #append>
             <el-button @click="handleSearch">
-              搜索
+              <span class="search2" />
             </el-button>
           </template>
           <template #default="{ item }">
@@ -179,10 +179,11 @@ export default {
     height: 30px;
   }
 }
-span.search {
+span.search2 {
   display: block;
   width: 15px;
   height: 15px;
+  background: url('@/assets/img/search.png') no-repeat;
   background-size: 14px;
 }
 .el-autocomplete {

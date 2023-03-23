@@ -368,7 +368,6 @@ export default {
 .main-container2 {
   .body-content .body-left {
     padding: 0;
-    width: 944px;
     background: none;
     border-radius: 0;
     box-shadow: none;

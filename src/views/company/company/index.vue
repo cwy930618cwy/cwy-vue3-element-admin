@@ -365,7 +365,6 @@ function handleQuery() {
     pageSize: state.queryParams.pageSize,
     states: state.queryParams.states ? 1 : 0
   }).then((data: any) => {
-    console.log('data----', data);
     state.userList = data.data.list;
     state.total = data.data.totalSize;
     state.header = [];
