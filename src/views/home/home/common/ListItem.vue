@@ -30,7 +30,7 @@
         <div class="right-btn" @click="handleBatchThe">勾选导出</div>
         <el-popover placement="top-start" :width="400" trigger="hover" :disabled="page.total < 10000" content="全部导出仅支持导出10000条数据，请修改筛选条件">
           <template #reference>
-            <div class="right-btn fr_c" :class="{ 'right-btn-dis': page.total > 10000 }" @click="handleBatchUnlock">
+            <div class="right-btn fr_c" @click="handleBatchUnlock">
               批量导出
             </div>
           </template>
@@ -209,30 +209,30 @@ export default {
     },
     selectDownLoad() {
       const contentIds = this.checkedValueList.map((r) => r.contentId).join(",");
-      exportApi
-        .selectDownLoad({ check: false, contentIds }, {})
-        .then((res) => {
-          exportApi
-            .selectDownLoad(
-              {
-                check: true,
-                contentIds,
-              },
-              { responseType: "blob" }
-            )
-            .then(() => { })
-            .catch((error) => {
-              exprotExcal("数据导出表" + dayjs().format("YYYY-MM-DD"), error);
-            });
-        })
-        .catch((err) => {
-          this.$message({
-            duration: 1000,
-            showClose: true,
-            type: "error",
-            message: err.msg || "服务异常！",
-          });
-        });
+      // exportApi
+      //   .selectDownLoad({ check: false, contentIds }, {})
+      //   .then((res) => {
+      //     exportApi
+      //       .selectDownLoad(
+      //         {
+      //           check: true,
+      //           contentIds,
+      //         },
+      //         { responseType: "blob" }
+      //       )
+      //       .then(() => { })
+      //       .catch((error) => {
+      //         exprotExcal("数据导出表" + dayjs().format("YYYY-MM-DD"), error);
+      //       });
+      //   })
+      //   .catch((err) => {
+      //     this.$message({
+      //       duration: 1000,
+      //       showClose: true,
+      //       type: "error",
+      //       message: err.msg || "服务异常！",
+      //     });
+      //   });
     },
     empty(type, msg) {
       // this.$refs.NoData.empty(type, msg);

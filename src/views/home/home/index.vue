@@ -4,8 +4,6 @@
     <div class="container-filter">
       <!--  筛选条件  -->
       <FilterEcho ref="FilterEcho" @clear="clearSelected"></FilterEcho>
-      <!--  业务地区  -->
-      <FilterArea ref="FilterArea"></FilterArea>
       <div class="fr fj_sb">
         <!--  选择时间  -->
         <FilterTime ref="FilterTime"></FilterTime>
@@ -14,8 +12,12 @@
       <FilterProcureCompany ref="FilterProcureCompany"></FilterProcureCompany>
       <!--  信息类型  -->
       <FilterTypeBidding ref="FilterTypeBidding"></FilterTypeBidding>
-      <el-button type="primary" @click="starSearch">搜索</el-button>
-      <el-button type="primary" @click="onClearAll">重置</el-button>
+      <!--  业务地区  -->
+      <FilterArea ref="FilterArea"></FilterArea>
+      <div class="fr fj_fe">
+        <el-button color="#7263CE" @click="starSearch">搜索</el-button>
+        <el-button color="#7263CE" @click="onClearAll">重置</el-button>
+      </div>
     </div>
 
     <div class="body-content fr">
@@ -258,13 +260,28 @@ export default {
       const res = {
         "autoSwitchMode": 0,
         "infos": [
-          { "contentId": "331220596", "dataTag": "", "dataType": "公告-招标公告", "infoPublishTime": "2023-02-22", "infoTitle": "热镀锌可利用卷 宝山钢铁股份有限公司", "provinceAndCity": "上海-上海" },
+          {
+            "contentId": "331220596",
+            "dataTag": "",
+            "dataType": "公告-招标公告",
+            "infoPublishTime": "2023-02-22",
+            "infoTitle": "热镀锌可利用卷 宝山钢铁股份有限公司",
+            "provinceAndCity": "上海-上海",
+            "zhaoBiaoUnit": "宝山钢铁股份有限公司",
+            "zhongBiaoUnit": "宝山钢铁股份有限公司",
+            "zhaoRelationWay": 3,
+            "dailiRelationWay": 3,
+            "zhongRelationWay": 3,
+            "gongshangRelationWay": 3
+          },
         ],
         "keywords": "",
         "pageNumber": 1,
         "pageSize": 10,
         "totalRecord": 197783311
       }
+
+      console.log('res-----', res)
 
       // !res.list.length && this.$refs.ListItem.empty(1, "没有检索到相关数据");
       this.$refs.ListItem.page.list = res.infos;

@@ -40,7 +40,7 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" :icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button color="#7263CE" :icon="Search" @click="handleQuery">搜索</el-button>
               <el-button :icon="Refresh" @click="resetQuery">重置</el-button>
             </el-form-item>
             <!-- 
@@ -49,11 +49,11 @@
             </el-form-item> -->
 
             <el-form-item>
-              <el-button type="primary" :icon="Plus" @click="handleAllDisable">批量禁用</el-button>
+              <el-button color="#7263CE" :icon="Plus" @click="handleAllDisable">批量禁用</el-button>
             </el-form-item>
 
             <el-form-item>
-              <el-button type="primary" :icon="Plus" @click="handleAdd">新增账号</el-button>
+              <el-button color="#7263CE" :icon="Plus" @click="handleAdd">新增账号</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -146,7 +146,7 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button type="primary" @click="submitForm">确 定</el-button>
+          <el-button color="#7263CE" @click="submitForm">确 定</el-button>
           <el-button @click="closeDialog">取 消</el-button>
         </div>
       </template>

@@ -5,9 +5,9 @@
             }">
       <div class="list-item1 fr">
         <el-checkbox class="list-checkbox" v-model="item.checked" @change="changeCheckbox(item, $event)"></el-checkbox>
-        <div class="item-content f_1">
+        <div class="item-content f_1" @click="handleDetail(item)">
           <div class="fr_c fj_sb">
-            <div class="content-title line-1" @click="handleDetail(item)">
+            <div class="content-title line-1">
               <div class="line-1" v-html="item.infoTitle"></div>
             </div>
             <span class="fs_0">{{ item.infoPublishTime }}</span>
@@ -20,6 +20,37 @@
             <el-tag style="color: #409eff">{{ item.dataTag }}</el-tag>
             <el-tag type="danger">{{ item.provinceAndCity }}</el-tag>
             <el-tag style="color: #409eff">{{ item.dataType }}</el-tag>
+          </div>
+
+          <div class="content-detail">
+            <div class="detail-ul">
+              <div class="detail-li" v-if="item.zhaoBiaoUnit">
+                招标单位：
+                <span>{{ item.zhaoBiaoUnit }}</span>
+              </div>
+              <div class="detail-li" v-if="item.zhaoRelationWay">
+                招标联系人：
+                <span class="phone">({{ item.zhaoRelationWay }})</span>
+              </div>
+              <div class="detail-li" v-if="item.dailiRelationWay">
+                代理联系人：
+                <span class="phone">({{ item.dailiRelationWay }})</span>
+              </div>
+            </div>
+            <div class="detail-ul">
+              <div class="detail-li" v-if="item.zhongBiaoUnit">
+                中标单位：
+                <span>{{ item.zhongBiaoUnit }}</span>
+              </div>
+              <div class="detail-li" v-if="item.zhongRelationWay">
+                中标联系人：
+                <span class="phone">({{ item.zhongRelationWay }})</span>
+              </div>
+              <div class="detail-li" v-if="item.gongshangRelationWay">
+                工商联系人：
+                <span class="phone">({{ item.gongshangRelationWay }})</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -51,11 +82,11 @@ export default {
   },
   methods: {
     handleDetail(item) {
-      const routeData = this.$router.resolve({
+      const routeData = this.$router.push({
         path: "/detail",
         query: { contentId: item.contentId, keywords: this.$parent.page.keywords },
       });
-      window.open(routeData.href, "_blank");
+      // window.open(routeData.href, "_blank");
     },
     /**
      * 初始化选中状态
@@ -108,6 +139,7 @@ export default {
       }
       .item-content {
         padding-left: 16px;
+        cursor: pointer;
         .content-title {
           font-size: 14px;
           color: #333;
@@ -125,6 +157,18 @@ export default {
             border-radius: 4px;
             padding: 6px 12px 7px;
             font-size: 14px;
+          }
+        }
+        .content-detail {
+          .detail-ul {
+            display: flex;
+            margin: 10px 0;
+            .detail-li {
+              margin-right: 100px;
+            }
+            .phone {
+              color: cornflowerblue;
+            }
           }
         }
       }

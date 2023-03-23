@@ -6,7 +6,7 @@
         <img class="image" src="@/assets/logo.png" alt="首页" />
         <div class="right">
           <h3 class="title1">融标宝后台管理系统</h3>
-          <h4 class="title2">挖局企业客户的贷款商机</h4>
+          <h4 class="title2">挖掘企业客户的贷款商机</h4>
         </div>
       </div>
 
