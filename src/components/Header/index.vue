@@ -3,8 +3,18 @@
     <div class="header-center">
       <!-- <span @click="goSearch" class="logo-icon" /> -->
       <div class="search-bottom">
-        <!-- <el-input @keyup.enter.native="handleSearch" v-model="keywords" placeholder="请输入您要搜索的内容" clearable> -->
-
+        <el-input @keyup.enter="handleSearch" v-model="keywords" placeholder="请输入您要搜索的内容" clearable>
+          <template #prepend>
+            <el-select v-model="select.value" placeholder="请选择" style="width: 115px" @change="changeSelect">
+              <el-option v-for="(item, index) in select.list" :key="index" :label="item.name" :value="item.id" />
+            </el-select>
+          </template>
+          <template #append>
+            <el-button @click="handleSearch">
+              <span class="search2" />
+            </el-button>
+          </template>
+          <!-- 
         <el-autocomplete ref="autocomplete" v-model="keywords" :fetch-suggestions="querySearchAsync" :trigger-on-focus="false" clearable placeholder="请输入您要搜索的内容" @select="handleSelect" @change="handleSelect" @keyup.enter.native="handleSearch" @clear="clearKeywords">
           <template #prepend>
             <el-select v-model="select.value" placeholder="请选择" style="width: 115px" @change="changeSelect">
@@ -19,13 +29,10 @@
           <template #default="{ item }">
             <div class="overHiden2 search_item">
               <span class="search_item_title" :title="item.value" v-html="filterTitle(item.value)"></span>
-              <!-- <el-button class="search_item_delete" type="text" title="查看">{{
-                                item.created
-                            }}</el-button> -->
             </div>
           </template>
-        </el-autocomplete>
-        <!-- </el-input> -->
+        </el-autocomplete> -->
+        </el-input>
       </div>
     </div>
   </div>
@@ -49,13 +56,13 @@ export default {
       keywords: "",
       select: {
         list: [
-          { id: "0", name: "全文" },
+          { id: "2", name: "全文" },
           { id: "1", name: "标题" },
           { id: "3", name: "招标单位" },
           { id: "4", name: "中标单位" },
-          { id: "5", name: "代理单位" },
+          { id: "5", name: "代理机构" },
         ],
-        value: "0",
+        value: "2",
       },
       results: [],
       optionsMatching: [],
@@ -111,7 +118,7 @@ export default {
     },
     handleSearch() {
       this.eventChange();
-      this.$refs.autocomplete.suggestions = [];
+      // this.$refs.autocomplete.suggestions = [];
     },
     changeSelect() {
       if (this.fromType === "1") {

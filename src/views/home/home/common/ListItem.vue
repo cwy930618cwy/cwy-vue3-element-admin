@@ -65,7 +65,7 @@
 <script>
 import ItemCompany from "./ItemCompany.vue";
 import NoData from "./NoData.vue";
-// import { exportApi } from "@/http/api";
+import { exportApi } from "@/api/home";
 import { exprotExcal } from "@/utils/shared";
 import dayjs from "dayjs";
 
@@ -208,31 +208,31 @@ export default {
       this.pro_setParams(params);
     },
     selectDownLoad() {
-      const contentIds = this.checkedValueList.map((r) => r.contentId).join(",");
-      // exportApi
-      //   .selectDownLoad({ check: false, contentIds }, {})
-      //   .then((res) => {
-      //     exportApi
-      //       .selectDownLoad(
-      //         {
-      //           check: true,
-      //           contentIds,
-      //         },
-      //         { responseType: "blob" }
-      //       )
-      //       .then(() => { })
-      //       .catch((error) => {
-      //         exprotExcal("数据导出表" + dayjs().format("YYYY-MM-DD"), error);
-      //       });
-      //   })
-      //   .catch((err) => {
-      //     this.$message({
-      //       duration: 1000,
-      //       showClose: true,
-      //       type: "error",
-      //       message: err.msg || "服务异常！",
-      //     });
-      //   });
+      const contentIds = this.checkedValueList.map((r) => r.infoId).join(",");
+      exportApi
+        .selectDownLoad({ check: false, contentIds }, {})
+        .then((res) => {
+          exportApi
+            .selectDownLoad(
+              {
+                check: true,
+                contentIds,
+              },
+              { responseType: "blob" }
+            )
+            .then(() => { })
+            .catch((error) => {
+              exprotExcal("数据导出表" + dayjs().format("YYYY-MM-DD"), error);
+            });
+        })
+        .catch((err) => {
+          this.$message({
+            duration: 1000,
+            showClose: true,
+            type: "error",
+            message: err.msg || "服务异常！",
+          });
+        });
     },
     empty(type, msg) {
       // this.$refs.NoData.empty(type, msg);

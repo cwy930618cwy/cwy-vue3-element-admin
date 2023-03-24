@@ -297,6 +297,7 @@ let province = ref([]);
 let city = ref([]);
 
 function provinceChange(citys: any) {
+  let total = citys;
   citys.forEach((item: any) => {
     if (province.value.indexOf(item[0]) === -1) {
       province.value.push(item[0]);
@@ -304,10 +305,15 @@ function provinceChange(citys: any) {
     if (item[1] && city.value.indexOf(item[1]) === -1) {
       city.value.push(item[1]);
     }
+    if (item[0] === '全国' || item === '全国') {
+      total = ['全国'];
+      province.value = ['全国'];
+      city.value = ['全国'];
+    }
   });
-  state.formData.totalcity = citys;
-  state.formData.province = province;
-  state.formData.city = city;
+  state.formData.totalcity = total;
+  state.formData.province = province.value;
+  state.formData.city = city.value;
 }
 
 /**

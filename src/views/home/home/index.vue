@@ -48,8 +48,8 @@ import FilterTime from "./common/FilterTime.vue";
 import ListItem from "./common/ListItem.vue";
 // import HelpfulHints from "@/components/HelpfulHints.vue";
 // import FilterCompanyInfo from "./common/FilterCompanyInfo.vue";
-import { searchDeleteParams } from "@/utils/shared";
-// import { searchApi, assistWindowSearchApi } from "@/http/api";
+import { searchDeleteParams, changeFilterTime } from "@/utils/shared";
+import { searchApi } from "@/api/home";
 import _ from "lodash";
 export default {
   name: "Maintenance",
@@ -84,12 +84,12 @@ export default {
     return {
       // 可操作参数
       params: {
-        searchRange: 0, //0：全文+内容  1：标题  2：项目编号  3：招标单位  4：中标单位  5：代理单位  6：联系人  7：联系电话
-        keywords: "", //关键词搜索
+        searchType: 2, //0：全文+内容  1：标题  2：项目编号  3：招标单位  4：中标单位  5：代理单位  6：联系人  7：联系电话
+        keyword: "", //关键词搜索
         province: "", //省（多个用英文逗号分割）
         city: "", //市（多个用英文逗号分割）
-        dataType: "", //数据类型 招标：1  中标：2
-        purchaseUnitFirstLevel: "", //采购单位一级行业（多个用英文逗号分割）
+        phoneCondition: ['-1'], //数据类型 招标：1  中标：2
+        infoType: ['-1'], //采购单位一级行业（多个用英文逗号分割）
         purchaseUnitSecondLevel: "", //采购单位二级行业（多个用英文逗号分割）
         classificationIndustry: "", //行业分类 （货物   工程   商业公司）  多个用，号分割
         startAmount: "", //筛选金额-开始金额
@@ -97,16 +97,17 @@ export default {
         beginTime: "", //开始时间 格式：yyyyMMdd
         endTime: "", //结束时间 格式：yyyyMMdd
         timeType: "-1", //时间分类 -1.全部  1.今天  2.近七天  3.近30天  4.近90天  5.近半年  6.近一年    0.自定义
-        searchModel: 1, //搜索模式 1：精准   2：模糊
+        searchModel: "", //搜索模式 1：精准   2：模糊
         ruleOutWords: "", //排除词  ，分割
         relatedWords: "", //相关词 ，分割
-        orderBy: 1, //排序类型  1：综合排序  2：时间排序
+        orderBy: "", //排序类型  1：综合排序  2：时间排序
         batchCondition: "", //批量条件
         pageNumber: 1,
         pageSize: 10,
         zhongBiaoUnit: "", //详情页中标单位
         zhaoBiaoUnit: "", //详情页招标单位
         zhaoRelationWay: "", //详情页招标单位联系方式
+        includePhone: 1
       },
       isCollapseShow: true, //是否收起
       loading: false,
@@ -140,8 +141,8 @@ export default {
       let newParams = {};
       switch (res.refNameRoot) {
         case FilterKeyword.name:
-          newParams.searchRange = res.data.searchRange || 0;
-          newParams.keywords = res.data.keywords;
+          newParams.searchType = res.data.searchRange || 2;
+          newParams.keyword = res.data.keywords;
           newParams.pageNumber = 1;
           break;
         case FilterArea.name:
@@ -151,13 +152,21 @@ export default {
           newParams.pageNumber = 1;
           break;
         case FilterTypeBidding.name:
+          console.log('FilterTypeBidding----', res)
           this.$refs.FilterEcho.fill(res);
-          newParams.dataType = res.data.leave1[0];
+          newParams.phoneCondition = res.data.leave1;
           newParams.pageNumber = 1;
           break;
         case FilterProcureCompany.name:
           this.$refs.FilterEcho.fill(res);
-          newParams.purchaseUnitFirstLevel = res.data.leave1;
+          let dataTree = []
+          res.data.dataTree.forEach((item) => {
+            dataTree.push(item.id)
+          })
+          if (res.data.leave1[0] === '全部') {
+            dataTree = ['-1']
+          }
+          newParams.infoType = dataTree;
           newParams.purchaseUnitSecondLevel = res.data.leave2;
           newParams.pageNumber = 1;
           break;
@@ -174,8 +183,9 @@ export default {
         //   break;
         case FilterTime.name:
           this.$refs.FilterEcho.fill(res);
-          newParams.beginTime = res.data.leave1[0];
-          newParams.endTime = res.data.leave2[0];
+          const { beginTime, endTime } = changeFilterTime(res)
+          newParams.beginTime = beginTime;
+          newParams.endTime = endTime;
           newParams.timeType = res.data.leave3[0];
           newParams.pageNumber = 1;
           break;
@@ -200,11 +210,11 @@ export default {
         //   newParams.pageNumber = 1;
         //   break;
         // case FilterCompanyInfo.name:
-        //   newParams.searchRange = res.data.searchRange || 0;
-        //   newParams.keywords = res.data.keywords;
+        //   newParams.searchType = res.data.searchType || 0;
+        //   newParams.keyword = res.data.keyword;
         //   const keywordValue = {
-        //     keywords: res.data.keywords,
-        //     searchRange: res.data.searchRange || 0,
+        //     keyword: res.data.keyword,
+        //     searchType: res.data.searchType || 0,
         //   };
         //   this.$refs.FilterKeyword.init(keywordValue);
         //   newParams.pageNumber = 1;
@@ -261,9 +271,9 @@ export default {
         "autoSwitchMode": 0,
         "infos": [
           {
-            "contentId": "331220596",
+            "infoId": "331220596",
             "dataTag": "",
-            "dataType": "公告-招标公告",
+            "infoType": "公告-招标公告",
             "infoPublishTime": "2023-02-22",
             "infoTitle": "热镀锌可利用卷 宝山钢铁股份有限公司",
             "provinceAndCity": "上海-上海",
@@ -275,7 +285,7 @@ export default {
             "gongshangRelationWay": 3
           },
         ],
-        "keywords": "",
+        "keyword": "",
         "pageNumber": 1,
         "pageSize": 10,
         "totalRecord": 197783311
@@ -289,67 +299,98 @@ export default {
       this.$refs.ListItem.page.size = res.pageSize;
       this.$refs.ListItem.page.total = res.totalRecord;
       this.$refs.ListItem.page.loading = false;
-      this.$refs.ListItem.page.keywords = res.keywords;
+      this.$refs.ListItem.page.keyword = res.keyword;
       this.loading = false;
 
-      // searchApi.search(this.paramsPost).then((res) => {
-      //     res = res.data;
-      //     if (res.autoSwitchMode === 1) {
-      //       this.$message({
-      //         duration: 1000,
-      //         showClose: true,
-      //         type: "error",
-      //         message: "查询结果没有数据, 将为您推荐相关数据",
-      //       });
-      //     }
-      //     // !res.list.length && this.$refs.ListItem.empty(1, "没有检索到相关数据");
-      //     this.$refs.ListItem.page.list = res.infos;
-      //     this.$refs.ListItem.page.pageNo = res.pageNumber;
-      //     this.$refs.ListItem.page.size = res.pageSize;
-      //     this.$refs.ListItem.page.total = res.totalRecord;
-      //     this.$refs.ListItem.page.loading = false;
-      //     this.$refs.ListItem.page.keywords = res.keywords;
-      //     this.loading = false;
+      //      public class SearchParamVo implements Serializable {
+      //     private String keyword;
+      //     private Integer searchType; // 1:标题 2：正文 3：招标单位 4：中标单位 5：代理机构
+      //     private Integer dateType; // 发布时间：0：全部 1：今天 2：近7天 3：近30天 4：近90天 5：近半年  6：近一年
+      //     private String beginTime; // 自定义开始时间
+      //     private String endTime; // 自定义截止时间
+      //     private List<Integer> infoType; // 信息类型 -1：全部  0: 公告 1：预告 2：变更 3：结果 5：其他
+      //     private List<String> province;
+      //     private List<String> city;
+      //     private Integer phoneCondition; // 电话筛选 0：全部  1: 有招标电话  2：有中标电话
+      //     private Integer includePhone; // 0: 全部 1：排除固定电话
+      //     private Integer pageNumber;
+      //     private Integer pageSize;
+      // }
 
-      //     assistWindowSearchApi
-      //       .assistWindowSearch({ keyword: this.params.keywords || this.paramsPost.keywords })
-      //       .then((res) => {
-      //         this.companyName = res.data.unitName;
-      //         this.historyBidRecord = res.data.historyBidRecord;
-      //         this.historyWinTheBidRecord = res.data.historyWinTheBidRecord;
-      //       })
-      //       .catch((err) => {
-      //         this.$message({
-      //           duration: 1000,
-      //           showClose: true,
-      //           type: "error",
-      //           message: err.msg,
-      //         });
-      //       });
-      //   })
-      //   .catch((err) => {
-      //     // if (this.params.searchModel === 1) {
-      //     //     if (err.code === "50002") {
-      //     //         this.$refs.FilterModel.init();
-      //     //         this.params.searchModel = this.paramsPost.searchModel = 2;
-      //     //         this.$refs.FilterTime.init();
-      //     //         this.params.timeType = this.paramsPost.timeType = 6;
-      //     //         this.starSearch();
-      //     //     }
-      //     // }
+      console.log('this.paramsPost---', this.paramsPost)
 
-      //     if (err.message === "cancel") return;
-      //     // this.$refs.ListItem.empty(2, "服务器异常！");
-      //     this.$refs.ListItem.page.total = 0;
-      //     this.$refs.ListItem.page.loading = false;
-      //     this.loading = false;
-      //     this.$message({
-      //       duration: 1000,
-      //       showClose: true,
-      //       type: "error",
-      //       message: err.msg,
-      //     });
-      //   });
+      // {
+      //   pageNumber: 1,
+      //   pageSize: 20,
+      //   keyword: "", // 关键字
+      //   searchType: 2, // 搜索类型
+      //   beginTime: '',  // 发布时间----开始时间
+      //   endTime: '', // 发布时间----结束时间
+      //   infoType: [0],  // 信息类型
+      //   province: ['全国'],
+      //   city: [],
+      //   dateType: 0,
+      //   includePhone: 0,
+      //   phoneCondition: 0,
+      // }
+      searchApi(this.paramsPost).then((res) => {
+        //     res = res.data;
+        //     if (res.autoSwitchMode === 1) {
+        //       this.$message({
+        //         duration: 1000,
+        //         showClose: true,
+        //         type: "error",
+        //         message: "查询结果没有数据, 将为您推荐相关数据",
+        //       });
+        //     }
+        //     // !res.list.length && this.$refs.ListItem.empty(1, "没有检索到相关数据");
+        //     this.$refs.ListItem.page.list = res.infos;
+        //     this.$refs.ListItem.page.pageNo = res.pageNumber;
+        //     this.$refs.ListItem.page.size = res.pageSize;
+        //     this.$refs.ListItem.page.total = res.totalRecord;
+        //     this.$refs.ListItem.page.loading = false;
+        //     this.$refs.ListItem.page.keyword = res.keyword;
+        //     this.loading = false;
+
+        //     assistWindowSearchApi
+        //       .assistWindowSearch({ keyword: this.params.keyword || this.paramsPost.keyword })
+        //       .then((res) => {
+        //         this.companyName = res.data.unitName;
+        //         this.historyBidRecord = res.data.historyBidRecord;
+        //         this.historyWinTheBidRecord = res.data.historyWinTheBidRecord;
+        //       })
+        //       .catch((err) => {
+        //         this.$message({
+        //           duration: 1000,
+        //           showClose: true,
+        //           type: "error",
+        //           message: err.msg,
+        //         });
+        //       });
+        //   })
+        //   .catch((err) => {
+        //     // if (this.params.searchModel === 1) {
+        //     //     if (err.code === "50002") {
+        //     //         this.$refs.FilterModel.init();
+        //     //         this.params.searchModel = this.paramsPost.searchModel = 2;
+        //     //         this.$refs.FilterTime.init();
+        //     //         this.params.timeType = this.paramsPost.timeType = 6;
+        //     //         this.starSearch();
+        //     //     }
+        //     // }
+
+        //     if (err.message === "cancel") return;
+        //     // this.$refs.ListItem.empty(2, "服务器异常！");
+        //     this.$refs.ListItem.page.total = 0;
+        //     this.$refs.ListItem.page.loading = false;
+        //     this.loading = false;
+        //     this.$message({
+        //       duration: 1000,
+        //       showClose: true,
+        //       type: "error",
+        //       message: err.msg,
+        //     });
+      });
     }, 100),
 
     handelMore() {

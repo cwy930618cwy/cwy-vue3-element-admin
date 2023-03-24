@@ -67,3 +67,54 @@ export function exprotPDF(dowLoadFileName, URL) {
     elink.click();
     document.body.removeChild(elink);
 }
+
+
+/**·
+ * 导出PDF
+ */
+export function changeFilterTime(res) {
+    const time = {
+        beginTime: 0,
+        endTime: 0
+    }
+    let toData = new Date(new Date().toLocaleDateString()).getTime()
+    const date = new Date()
+
+    switch (res.data.leave3[0]) {
+        case 0:
+            time.beginTime = new Date(res.data.leave1[0]).getTime() //结束时间
+            time.endTime = new Date(res.data.leave2[0]).getTime() //结束时间
+            break
+        case 1:
+            time.beginTime = toData //开始时间
+            time.endTime = toData + 24 * 60 * 60 * 1000 - 1 //结束时间
+            break
+        case 2:
+            time.beginTime = toData //开始时间
+            time.endTime = toData + 7 * 24 * 60 * 60 * 1000 - 1 //结束时间
+            break
+        case 3:
+            time.beginTime = toData //开始时间
+            time.endTime = toData + 30 * 24 * 60 * 60 * 1000 - 1 //结束时间
+            break
+        case 4:
+            time.beginTime = toData //开始时间
+            time.endTime = toData + 90 * 24 * 60 * 60 * 1000 - 1 //结束时间
+            break
+        case 5:
+            date.setFullYear(date.getMonth() - 6)
+            time.beginTime = toData //开始时间
+            time.endTime = new Date(date.toLocaleDateString()).getTime() //结束时间
+            break
+        case 6:
+            date.setFullYear(date.getFullYear() - 1)
+            time.beginTime = toData //开始时间
+            time.endTime = new Date(date.toLocaleDateString()).getTime() //结束时间
+            break
+        default:
+            time.beginTime = undefined //开始时间
+            time.endTime = undefined //结束时间
+            break
+    }
+    return time
+}

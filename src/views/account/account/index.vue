@@ -134,11 +134,14 @@
         <el-form-item label="账号" prop="userName">
           <el-input v-model="formData.userName" placeholder="请输入账号" />
         </el-form-item>
+        <el-form-item label="密码" v-if="false" prop="password">
+          <el-input v-model="formData.password" placeholder="请输入密码" />
+        </el-form-item>
         <el-form-item label="姓名" prop="linkMan">
           <el-input v-model="formData.linkMan" placeholder="请输入姓名" />
         </el-form-item>
-        <el-form-item label="地区权限" prop="province">
-          <el-cascader :options="citylist" style="width: 500px;" v-model="totalcity" :props="{ multiple: true, value: 'name', label: 'name', checkStrictly: true }" clearable @change="provinceChange"></el-cascader>
+        <el-form-item label="地区权限" prop="totalcity">
+          <el-cascader :options="citylist" style="width: 500px;" v-model="formData.totalcity" :props="{ multiple: true, value: 'name', label: 'name', checkStrictly: true }" clearable @change="provinceChange"></el-cascader>
         </el-form-item>
         <el-form-item label="手机号" prop="linkPhone">
           <el-input v-model="formData.linkPhone" placeholder="请输入手机号" maxlength="50" />
@@ -254,7 +257,9 @@ const state = reactive({
     company: '',
     roleId: 4,
     userName: '',
+    password: '',
     province: '',
+    totalcity: '',
     linkMan: '',
     linkPhone: '',
     ramark: ''
@@ -276,8 +281,9 @@ const state = reactive({
       { required: true, message: '用户类型不能为空', trigger: 'change' }
     ],
     userName: [{ required: true, message: '账号不能为空', trigger: 'blur' }],
+    password: [{ required: true, message: '密码不能为空', trigger: 'blur' }],
     linkMan: [{ required: true, message: '姓名不能为空', trigger: 'blur' }],
-    province: [
+    totalcity: [
       { required: true, message: '地区权限不能为空', trigger: 'change' }
     ],
     linkPhone: [{ required: true, message: '手机号不能为空', trigger: 'blur' }],
@@ -314,9 +320,9 @@ const {
 
 const province = ref([]);
 const city = ref([]);
-const totalcity = ref([]);
 
 function provinceChange(citys: any) {
+  let total = citys;
   citys.forEach((item: any) => {
     if (province.value.indexOf(item[0]) === -1) {
       province.value.push(item[0]);
@@ -324,9 +330,15 @@ function provinceChange(citys: any) {
     if (item[1] && city.value.indexOf(item[1]) === -1) {
       city.value.push(item[1]);
     }
+    if (item[0] === '全国' || item === '全国') {
+      total = ['全国'];
+      province.value = ['全国'];
+      city.value = ['全国'];
+    }
   });
-  state.formData.province = province;
-  state.formData.city = city;
+  state.formData.totalcity = total;
+  state.formData.province = province.value;
+  state.formData.city = city.value;
 }
 
 /**
@@ -519,7 +531,9 @@ const resetTemp = () => {
     company: userStore.$state.roleId === 1 ? '' : userStore.$state.company,
     roleId: 4,
     userName: '',
+    password: '',
     province: '',
+    totalcity: '',
     linkMan: '',
     linkPhone: '',
     ramark: ''
@@ -556,7 +570,9 @@ async function handleUpdate(row: { [key: string]: any }) {
       formData.value.city = [];
     }
 
-    totalcity.value = formData.value.province.concat(formData.value.city);
+    formData.value.totalcity = formData.value.province.concat(
+      formData.value.city
+    );
     province.value = formData.value.province;
     city.value = formData.value.city;
     getDeptOptions(userStore.$state.province);

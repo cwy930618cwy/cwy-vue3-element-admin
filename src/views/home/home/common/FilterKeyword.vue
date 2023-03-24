@@ -21,6 +21,7 @@ export default {
       this.$refs.Header.initData(obj)
     },
     changeSearch(data) {
+      console.log('changeSearch---', data)
       this.emitChange(data);
     },
     emitChange(op) {
@@ -42,7 +43,7 @@ export default {
   mounted() {
     const q = this.$route.query;
     const params = {
-      searchRange: q.searchRange === undefined ? "0" : q.searchRange,
+      searchRange: q.searchRange === undefined ? "2" : q.searchRange,
       keywords: q.keywords,
       // searchModel: q.searchModel === undefined ? "1" : q.searchModel,
     };

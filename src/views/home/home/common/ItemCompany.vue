@@ -84,7 +84,7 @@ export default {
     handleDetail(item) {
       const routeData = this.$router.push({
         path: "/detail",
-        query: { contentId: item.contentId, keywords: this.$parent.page.keywords },
+        query: { infoId: item.infoId, keywords: this.$parent.page.keywords },
       });
       // window.open(routeData.href, "_blank");
     },
@@ -102,7 +102,7 @@ export default {
       return list.map((item) => {
         // 为真表示点击某个选择框，只更新某一个数据；为假表示是初始化所有数据
         if (checkedId) {
-          checkedId === item.contentId && (item.checked = checkedStatus);
+          checkedId === item.infoId && (item.checked = checkedStatus);
           // item.isUnlock === 1 && (item.titleText = item.title);
         } else {
           //解锁状态不能选中
@@ -119,7 +119,7 @@ export default {
       this.$emit("checked", isCheckedAll, checkedList);
     },
     changeCheckbox(item, checkedStatus) {
-      this.initCheckbox(this.list, checkedStatus, item.contentId);
+      this.initCheckbox(this.list, checkedStatus, item.infoId);
       this.checkedStatus();
     },
   },
