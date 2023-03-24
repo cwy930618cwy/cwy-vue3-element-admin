@@ -2,7 +2,7 @@
   <div class="app-container">
     <el-row :gutter="20">
 
-      <!-- 企业数据 -->
+      <!-- 公司数据 -->
       <el-col :span="24" :xs="24">
         <div class="search">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
@@ -20,7 +20,7 @@
             <el-form-item>
               <el-button color="#7263CE" :icon="Search" @click="handleQuery">搜索</el-button>
               <el-button :icon="Refresh" @click="resetQuery">重置</el-button>
-              <el-button color="#7263CE" :icon="Plus" @click="handleAdd">新增企业</el-button>
+              <el-button color="#7263CE" :icon="Plus" @click="handleAdd">新增公司</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -38,6 +38,17 @@
                 {{ scope.row.validNum }}/{{ scope.row.accountNum }}
               </template>
             </el-table-column>
+            <el-table-column label="状态" align="center" prop="states">
+              <template #default="scope">
+                <el-switch v-model="scope.row.states" :inactive-value="0" :active-value="1" :before-change="beforeSwitchChange" @change="handleStatusChange(scope.row)" />
+              </template>
+            </el-table-column>
+            <el-table-column label="失效日期" sortable align="center" prop="accessEndTime" min-width="120">
+              <template #default="scope">
+                <span>{{ proxy.$filters.formatTime(scope.row.accessEndTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.accessEndTime) }}</span>
+                <el-tag class="ml-2" v-if="proxy.$filters.formatSeven(scope.row.accessEndTime) < 30" type="danger">剩余{{ proxy.$filters.formatSeven(scope.row.accessEndTime) }}天</el-tag>
+              </template>
+            </el-table-column>
 
             <el-table-column label="近七日总DAU" min-width="120" align="center" prop="dailyCount">
               <template #default="scope">
@@ -50,7 +61,7 @@
                 <span>{{ scope.row.dailyCount[item] }}</span>
               </template>
             </el-table-column>
-
+            <el-table-column label="商务经理" align="center" prop="salesPerson" min-width="120" />
             <el-table-column label="公司联系人/公司联系电话" show-overflow-tooltip min-width="120" align="center" prop="linkMan">
               <template #default="scope">
                 {{ scope.row.linkMan }}/{{ scope.row.linkPhone }}
@@ -58,17 +69,6 @@
             </el-table-column>
 
             <el-table-column label="地区权限" align="center" prop="province" min-width="120" />
-            <el-table-column label="失效日期" sortable align="center" prop="accessEndTime" min-width="120">
-              <template #default="scope">
-                <span>{{ proxy.$filters.formatTime(scope.row.accessEndTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.accessEndTime) }}</span>
-                <el-tag class="ml-2" v-if="proxy.$filters.formatSeven(scope.row.accessEndTime) < 30" type="danger">剩余{{ proxy.$filters.formatSeven(scope.row.accessEndTime) }}天</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column label="状态" align="center" prop="states">
-              <template #default="scope">
-                <el-switch v-model="scope.row.states" :inactive-value="0" :active-value="1" :before-change="beforeSwitchChange" @change="handleStatusChange(scope.row)" />
-              </template>
-            </el-table-column>
             <el-table-column label="创建时间" sortable align="center" prop="createTime" min-width="180">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatTime(scope.row.createTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.createTime) }}</span>
@@ -92,7 +92,7 @@
       </el-col>
     </el-row>
 
-    <!-- 企业表单 -->
+    <!-- 公司表单 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="600px" append-to-body @close="closeDialog">
       <el-form ref="dataFormRef" label-position="top" height="250" :model="formData" :rules="rules" label-width="80px">
         <el-form-item label="公司类型" prop="companyType">
@@ -201,8 +201,8 @@ import { searchCompany } from '@/api/company';
 const userStore = useUserStore();
 
 const queryFormRef = ref(ElForm); // 查询表单
-const dataFormRef = ref(ElForm); // 企业表单
-const cascaderRef = ref(ElForm); // 企业表单
+const dataFormRef = ref(ElForm); // 公司表单
+const cascaderRef = ref(ElForm); // 公司表单
 const importFormRef = ref(ElForm); // 导入表单
 
 const { ctx, proxy }: any = getCurrentInstance();
@@ -266,7 +266,7 @@ const state = reactive({
   },
 
   importDialog: {
-    title: '企业导入',
+    title: '公司导入',
     visible: false
   } as DialogType,
   importFormData: {} as UserImportData,
@@ -361,13 +361,13 @@ const beforeSwitchChange = (val: any) => {
 };
 
 /**
- * 企业状态change
+ * 公司状态change
  */
 function handleStatusChange(row: { [key: string]: any }) {
   if (!switchState.switchStatus) return;
   if (!row.company) return;
   const text = row.states === 1 ? '启用' : '停用';
-  ElMessageBox.confirm('确认要' + text + '' + row.company + '企业吗?', '警告', {
+  ElMessageBox.confirm('确认要' + text + '' + row.company + '公司吗?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
@@ -447,11 +447,11 @@ const resetTemp = () => {
 };
 
 /**
- * 添加企业
+ * 添加公司
  **/
 function handleAdd() {
   state.dialog = {
-    title: '添加企业',
+    title: '添加公司',
     visible: true
   };
   nextTick(() => {
@@ -462,7 +462,7 @@ function handleAdd() {
 }
 
 /**
- * 修改企业
+ * 修改公司
  **/
 async function handleUpdate(row: { [key: string]: any }) {
   detailCompany({ companyId: row.companyId }).then((res: any) => {
@@ -485,7 +485,7 @@ async function handleUpdate(row: { [key: string]: any }) {
     city.value = formData.value.city;
     getDeptOptions(userStore.$state.province);
     dialog.value = {
-      title: '修改企业',
+      title: '修改公司',
       visible: true
     };
   });
@@ -513,13 +513,13 @@ function submitForm() {
 
       if (userId) {
         updateCompany(state.formData).then(() => {
-          ElMessage.success('修改企业成功');
+          ElMessage.success('修改公司成功');
           closeDialog();
           handleQuery();
         });
       } else {
         createCompany(state.formData).then(() => {
-          ElMessage.success('新增企业成功');
+          ElMessage.success('新增公司成功');
           closeDialog();
           handleQuery();
         });
@@ -529,12 +529,12 @@ function submitForm() {
 }
 
 /**
- * 删除企业
+ * 删除公司
  */
 function handleDelete(row: { [key: string]: any }) {
   const userIds = row.id || state.ids.join(',');
   ElMessageBox.confirm(
-    '是否确认删除企业编号为「' + userIds + '」的数据项?',
+    '是否确认删除公司编号为「' + userIds + '」的数据项?',
     '警告',
     {
       confirmButtonText: '确定',
@@ -552,7 +552,7 @@ function handleDelete(row: { [key: string]: any }) {
 }
 
 /**
- * 关闭企业弹窗
+ * 关闭公司弹窗
  */
 function closeDialog() {
   dialog.value.visible = false;
@@ -611,7 +611,7 @@ function getGenderOptions(query: any) {
 
 onMounted(() => {
   getDeptOptions(userStore.$state.province);
-  // 初始化企业列表数据
+  // 初始化公司列表数据
   handleQuery();
 });
 </script>

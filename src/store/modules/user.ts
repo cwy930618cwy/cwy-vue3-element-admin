@@ -18,6 +18,7 @@ export const useUserStore = defineStore('user', () => {
   const companyId = ref<string>('');
   const province = ref<string>('');
   const accountNum = ref<string>('');
+  const accessEndTime = ref<string>('');
   const roleId = ref(0) as any;
   const roleName = ref('') as any;
   const rolesTypeList = ref([]) as any;
@@ -80,6 +81,7 @@ export const useUserStore = defineStore('user', () => {
           roles.value = data.data.roles;
           roleId.value = data.data.roleId;
           perms.value = data.data.perms;
+          accessEndTime.value = data.data.accessEndTime;
           company.value = data.data.company;
 
           rolesTypeList.value.forEach((element: any) => {
@@ -118,12 +120,14 @@ export const useUserStore = defineStore('user', () => {
     avatar.value = '';
     province.value = '';
     company.value = '';
+    accessEndTime.value = '';
     accountNum.value = '';
     roles.value = [];
     perms.value = [];
   }
   return {
     roleId,
+    accessEndTime,
     companyId,
     rolesTypeList,
     roleName,

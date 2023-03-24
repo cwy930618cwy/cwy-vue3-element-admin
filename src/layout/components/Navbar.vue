@@ -59,10 +59,13 @@ function logout() {
     <mix-nav v-if="device !== 'mobile' && settingsStore.layout === 'mix'" />
 
     <div v-if="device === 'mobile' || settingsStore.layout === 'left'" class="flex justify-start">
-      <div class="flex justify-center items-center">
-        <el-tag>{{ userStore.$state.roleName }}</el-tag>
-        <div style="margin: 0 20px;">{{ userStore.$state.nickname }}</div>
-        <div style="margin-right: 20px;cursor: pointer;" @click="logout">退出</div>
+      <div class="flex justify-center fr_fs">
+        <el-tag style="margin-top: 10px;">{{ userStore.$state.roleName }}</el-tag>
+        <div style="margin: 0 20px;margin: 0px 20px;line-height: 16px;margin-top: 10px;">
+          <div>{{ userStore.$state.nickname }}</div>
+          <div>{{ userStore.$state.accessEndTime }}到期</div>
+        </div>
+        <div style="margin-right: 20px;cursor: pointer;margin-top: 10px;" @click="logout">退出</div>
       </div>
     </div>
   </div>
@@ -74,7 +77,7 @@ function logout() {
 }
 
 .navbar {
-  height: 50px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: space-between;

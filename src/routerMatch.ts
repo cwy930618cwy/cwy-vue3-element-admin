@@ -4,7 +4,7 @@ const matchs: any = {
       component: "company/company/index",
       name: "company",
       meta: {
-        title: "企业管理",
+        title: "公司管理",
         icon: "company"
       }
     },
