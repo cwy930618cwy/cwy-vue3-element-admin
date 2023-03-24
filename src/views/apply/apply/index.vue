@@ -7,7 +7,11 @@
         <div class="search">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="公司名称" prop="company">
-              <el-input v-model="queryParams.company" placeholder="请输入公司名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+              <el-select v-model="queryParams.company" style="width: 180px;" filterable clearable remote reserve-keyword placeholder="请输入关键词" @blur="selectBlur" @clear="selectClear" @change="selectChange" :remote-method="getGenderOptions">
+                <el-option v-for="item in restaurants" :key="item.unitName" :label="item.unitName" :value="item.unitName">
+                </el-option>
+              </el-select>
+
             </el-form-item>
 
             <el-form-item label="手机号" prop="phoneNumber">
@@ -23,8 +27,8 @@
 
         <el-card shadow="never">
           <el-table v-loading="loading" :data="userList">
-            <el-table-column label="姓名" align="center" prop="userName" />
-            <el-table-column label="所属公司名称" align="center" prop="company" />
+            <el-table-column label="姓名" show-overflow-tooltip align="center" prop="userName" />
+            <el-table-column label="所属公司名称" show-overflow-tooltip align="center" prop="company" />
             <el-table-column label="手机号" align="center" prop="phoneNumber" />
             <el-table-column label="职务" align="center" prop="companyPost" />
             <el-table-column label="申请时间" align="center" prop="createTime">
@@ -38,7 +42,7 @@
                 <span>{{ proxy.$filters.formatTime(scope.row.handleTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.handleTime) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="备注" align="center" prop="desc" />
+            <el-table-column label="备注" show-overflow-tooltip align="center" prop="desc" />
 
             <el-table-column label="操作" align="left" fixed="right" width="100">
               <template #default="scope">
@@ -114,12 +118,13 @@ import {
   UserQuery,
   UserType
 } from '@/api/user/types';
+import { searchCompany } from '@/api/company';
 
 const queryFormRef = ref(ElForm); // 查询表单
 const dataFormRef = ref(ElForm); // 用户表单
 const importFormRef = ref(ElForm); // 导入表单
 
-const { proxy }: any = getCurrentInstance();
+const { ctx, proxy }: any = getCurrentInstance();
 
 const state = reactive({
   // 遮罩层
@@ -303,7 +308,32 @@ function closeDialog() {
   formData.value.id = undefined;
 }
 
+function selectBlur(e: any) {
+  // 意见类型
+  if (e.target.value !== '') {
+    state.queryParams.company = e.target.value;
+    ctx.$forceUpdate();
+  }
+}
+function selectClear() {
+  state.queryParams.company = '';
+  ctx.$forceUpdate();
+}
+function selectChange(val: any) {
+  state.queryParams.company = val;
+  ctx.$forceUpdate();
+}
+
 const citylist = ref([]) as any;
+const restaurants = ref([]) as any;
+/**
+ * 获取性别下拉项
+ */
+function getGenderOptions(query: any) {
+  searchCompany({ company: query }).then((response: any) => {
+    restaurants.value = response?.data;
+  });
+}
 
 onMounted(() => {
   citylist.value = getAreaJson();

@@ -24,7 +24,10 @@
         <div class="search">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="公司名称" prop="company" v-if="userStore.$state.roleId === 1">
-              <el-input v-model="queryParams.company" placeholder="请输入公司名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+              <el-select v-model="queryParams.company" style="width: 180px;" filterable clearable remote reserve-keyword placeholder="请输入关键词" @blur="selectBlur" @clear="selectClear" @change="selectChange" :remote-method="getGenderOptions">
+                <el-option v-for="item in restaurants" :key="item.unitName" :label="item.unitName" :value="item.unitName">
+                </el-option>
+              </el-select>
             </el-form-item>
 
             <el-form-item label="账号" prop="accountName">
@@ -69,7 +72,7 @@
           <el-table v-loading="loading" ref="multipleTableRef" :data="userList" @selection-change="handleSelectionChange">
             <el-table-column type="selection" width="55">
             </el-table-column>
-            <el-table-column label="账号" align="center" prop="userName" />
+            <el-table-column label="账号" show-overflow-tooltip align="center" prop="userName" />
             <el-table-column label="姓名" width="120" align="center" prop="linkMan" />
             <el-table-column label="近七日总DAU" v-if="userStore.$state.roleId === 1" width="120" align="center" prop="accountDAU">
               <template #default="scope">
@@ -81,7 +84,7 @@
                 <span>{{ proxy.$filters.formatRoleName(scope.row.roleId) }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="所属公司名称" width="220" align="center" prop="company" />
+            <el-table-column label="所属公司名称" show-overflow-tooltip width="220" align="center" prop="company" />
             <el-table-column label="手机号" width="120" align="center" prop="linkPhone" />
             <el-table-column label="地区权限" align="center" prop="province" width="120" />
             <el-table-column label="状态" align="center" prop="states">
@@ -89,7 +92,7 @@
                 <el-switch v-model="scope.row.states" :inactive-value="0" :active-value="1" @change="handleStatusChange(scope.row)" />
               </template>
             </el-table-column>
-            <el-table-column label="备注" align="center" prop="remarks" width="120" />
+            <el-table-column label="备注" show-overflow-tooltip align="center" prop="remarks" width="120" />
             <el-table-column label="创建时间" align="center" prop="createTime" width="180">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatTime(scope.row.createTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.createTime) }}</span>
@@ -223,7 +226,7 @@ const queryFormRef = ref(ElForm); // 查询表单
 const dataFormRef = ref(ElForm); // 用户表单
 const importFormRef = ref(ElForm); // 导入表单
 
-const { proxy }: any = getCurrentInstance();
+const { ctx, proxy }: any = getCurrentInstance();
 
 const state = reactive({
   // 遮罩层
@@ -260,7 +263,7 @@ const state = reactive({
     company: '',
     accountName: '',
     linkPhone: '',
-    states: 0,
+    states: true,
     pageNumber: 1,
     pageSize: 10
   } as any,
@@ -379,18 +382,22 @@ async function getUserRoles() {
  */
 function handleStatusChange(row: { [key: string]: any }) {
   const text = row.states === 1 ? '启用' : '停用';
-  ElMessageBox.confirm('确认要' + text + '' + row.company + '用户吗?', '警告', {
-    confirmButtonText: '确定',
-    cancelButtonText: '取消',
-    type: 'warning'
-  })
+  ElMessageBox.confirm(
+    '确认要' + text + '' + row.userName + '账户吗?',
+    '警告',
+    {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }
+  )
     .then(() => {
       deleteAccount({ state: row.states, userIds: [row.userId] }).then(() => {
         ElMessage.success(text + '成功');
       });
     })
     .catch(() => {
-      // row.states = row.states === 1 ? 0 : 1;
+      row.states = row.states === 1 ? 0 : 1;
     });
 }
 
@@ -524,7 +531,7 @@ const resetTemp = () => {
  **/
 async function handleAdd() {
   state.dialog = {
-    title: '添加账户',
+    title: '添加账号',
     visible: true
   };
   await getDeptOptions(userStore.$state.province);
@@ -542,17 +549,19 @@ async function handleAdd() {
 async function handleUpdate(row: { [key: string]: any }) {
   detailAccount({ userId: row.userId }).then((res: any) => {
     formData.value = res.data;
-
-    formData.value.province = ['安徽'];
-    formData.value.city = ['安庆'];
+    if (!formData.value.province) {
+      formData.value.province = [];
+    }
+    if (!formData.value.city) {
+      formData.value.city = [];
+    }
 
     totalcity.value = formData.value.province.concat(formData.value.city);
-
     province.value = formData.value.province;
     city.value = formData.value.city;
     getDeptOptions(userStore.$state.province);
     dialog.value = {
-      title: '修改账户',
+      title: '修改账号',
       visible: true
     };
   });
@@ -647,6 +656,22 @@ function getGenderOptions(query: any) {
   searchCompany({ company: query }).then((response: any) => {
     restaurants.value = response?.data;
   });
+}
+
+function selectBlur(e: any) {
+  // 意见类型
+  if (e.target.value !== '') {
+    state.queryParams.company = e.target.value;
+    ctx.$forceUpdate();
+  }
+}
+function selectClear() {
+  state.queryParams.company = '';
+  ctx.$forceUpdate();
+}
+function selectChange(val: any) {
+  state.queryParams.company = val;
+  ctx.$forceUpdate();
 }
 
 function selectCompany(query: any) {

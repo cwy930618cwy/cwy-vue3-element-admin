@@ -2,12 +2,15 @@
   <div class="app-container">
     <el-row :gutter="20">
 
-      <!-- 用户数据 -->
+      <!-- 企业数据 -->
       <el-col :span="24" :xs="24">
         <div class="search">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="公司名称" prop="company">
-              <el-input v-model="queryParams.company" placeholder="请输入公司名称" clearable style="width: 200px" @keyup.enter="handleQuery" />
+              <el-select v-model="queryParams.company" style="width: 180px;" filterable clearable remote reserve-keyword placeholder="请输入关键词" @blur="selectBlur" @clear="selectClear" @change="selectChange" :remote-method="getGenderOptions">
+                <el-option v-for="item in restaurants" :key="item.unitName" :label="item.unitName" :value="item.unitName">
+                </el-option>
+              </el-select>
             </el-form-item>
 
             <el-form-item label="只看可用公司" prop="states">
@@ -27,6 +30,7 @@
             <el-table-column label="公司名称" show-overflow-tooltip align="center" min-width="200" prop="company">
               <template #default="scope">
                 <span style="color: #409eff;cursor: pointer;" @click="resetPassword(scope.row)">{{ scope.row.company }}</span>
+                <el-tag class="ml-2" v-if="scope.row.companyType === 0" type="danger">试用</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="可用账号数/授权账号数" min-width="100" align="center" prop="validNum">
@@ -57,7 +61,7 @@
             <el-table-column label="失效日期" sortable align="center" prop="accessEndTime" min-width="120">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatTime(scope.row.accessEndTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.accessEndTime) }}</span>
-                <el-tag class="ml-2" v-if="proxy.$filters.formatSeven(scope.row.accessEndTime) > 30" type="danger">剩余{{ proxy.$filters.formatSeven(scope.row.accessEndTime) }}天</el-tag>
+                <el-tag class="ml-2" v-if="proxy.$filters.formatSeven(scope.row.accessEndTime) < 30" type="danger">剩余{{ proxy.$filters.formatSeven(scope.row.accessEndTime) }}天</el-tag>
               </template>
             </el-table-column>
             <el-table-column label="状态" align="center" prop="states">
@@ -88,7 +92,7 @@
       </el-col>
     </el-row>
 
-    <!-- 用户表单 -->
+    <!-- 企业表单 -->
     <el-dialog :title="dialog.title" v-model="dialog.visible" width="600px" append-to-body @close="closeDialog">
       <el-form ref="dataFormRef" label-position="top" height="250" :model="formData" :rules="rules" label-width="80px">
         <el-form-item label="公司类型" prop="companyType">
@@ -100,13 +104,11 @@
         <el-form-item label="公司名称" prop="company">
           <el-input v-model="formData.company" placeholder="请输入公司名称" />
         </el-form-item>
-        <el-form-item label="地区权限" prop="province">
-          <el-select v-model="formData.province" filterable placeholder="请选择">
-            <el-option v-for="item in citylist" :key="item.id" :label="item.name" :value="item.name" />
-          </el-select>
-        </el-form-item>
         <el-form-item label="授权账号数" prop="accountNum">
           <el-input v-model="formData.accountNum" placeholder="请输入授权账号数" maxlength="11" />
+        </el-form-item>
+        <el-form-item label="地区权限" prop="totalcity">
+          <el-cascader :options="citylist" style="width: 500px;" v-model="formData.totalcity" :props="{ multiple: true, value: 'name', label: 'name', checkStrictly: true }" clearable @change="provinceChange"></el-cascader>
         </el-form-item>
         <el-form-item label="开始日期和失效日期" prop="accessEndTime">
           <el-date-picker v-model="formData.accessBeginTime" type="date" placeholder="请输入生效日期">
@@ -195,14 +197,15 @@ import { parseTime } from '@/utils';
 import router from '@/router';
 import { useUserStore } from '@/store/modules/user';
 import { store } from '@/store';
+import { searchCompany } from '@/api/company';
 const userStore = useUserStore();
 
 const queryFormRef = ref(ElForm); // 查询表单
-const dataFormRef = ref(ElForm); // 用户表单
+const dataFormRef = ref(ElForm); // 企业表单
+const cascaderRef = ref(ElForm); // 企业表单
 const importFormRef = ref(ElForm); // 导入表单
 
-const { proxy }: any = getCurrentInstance();
-const citylist = ref([]) as any;
+const { ctx, proxy }: any = getCurrentInstance();
 
 const state = reactive({
   // 遮罩层
@@ -228,6 +231,7 @@ const state = reactive({
     companyType: 0,
     company: '',
     province: '',
+    totalcity: [''],
     accountNum: '',
     accessBeginTime: null,
     accessEndTime: null,
@@ -236,6 +240,8 @@ const state = reactive({
     linkPhone: ''
   } as any,
   queryParams: {
+    company: '',
+    states: true,
     pageNumber: 1,
     pageSize: 10
   } as any,
@@ -244,8 +250,12 @@ const state = reactive({
       { required: true, message: '公司类型不能为空', trigger: 'change' }
     ],
     company: [{ required: true, message: '公司名称不能为空', trigger: 'blur' }],
-    province: [
-      { required: true, message: '地区权限不能为空', trigger: 'change' }
+    totalcity: [
+      {
+        required: true,
+        message: '地区权限不能为空',
+        trigger: 'change'
+      }
     ],
     accountNum: [
       { required: true, message: '授权账号数不能为空', trigger: 'blur' }
@@ -256,7 +266,7 @@ const state = reactive({
   },
 
   importDialog: {
-    title: '用户导入',
+    title: '企业导入',
     visible: false
   } as DialogType,
   importFormData: {} as UserImportData,
@@ -282,6 +292,23 @@ const {
   excelFilelist,
   header
 } = toRefs(state);
+
+let province = ref([]);
+let city = ref([]);
+
+function provinceChange(citys: any) {
+  citys.forEach((item: any) => {
+    if (province.value.indexOf(item[0]) === -1) {
+      province.value.push(item[0]);
+    }
+    if (item[1] && city.value.indexOf(item[1]) === -1) {
+      city.value.push(item[1]);
+    }
+  });
+  state.formData.totalcity = citys;
+  state.formData.province = province;
+  state.formData.city = city;
+}
 
 /**
  * 部门筛选
@@ -328,13 +355,13 @@ const beforeSwitchChange = (val: any) => {
 };
 
 /**
- * 用户状态change
+ * 企业状态change
  */
 function handleStatusChange(row: { [key: string]: any }) {
   if (!switchState.switchStatus) return;
   if (!row.company) return;
   const text = row.states === 1 ? '启用' : '停用';
-  ElMessageBox.confirm('确认要' + text + '' + row.company + '用户吗?', '警告', {
+  ElMessageBox.confirm('确认要' + text + '' + row.company + '企业吗?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
@@ -362,14 +389,13 @@ function handleQuery() {
     pageSize: state.queryParams.pageSize,
     states: state.queryParams.states ? 1 : 0
   }).then((data: any) => {
+    state.loading = false;
     state.userList = data.data.list;
     state.total = data.data.totalSize;
     state.header = [];
     for (let items in data.data.list[0].dailyCount) {
       if (items !== '总计') state.header.push(items);
     }
-
-    state.loading = false;
   });
 }
 
@@ -404,6 +430,7 @@ const resetTemp = () => {
     companyType: 0,
     company: '',
     province: citylist.value[0].name,
+    totalcity: [''],
     accountNum: '',
     accessBeginTime: null,
     accessEndTime: null,
@@ -414,7 +441,7 @@ const resetTemp = () => {
 };
 
 /**
- * 添加用户
+ * 添加企业
  **/
 function handleAdd() {
   state.dialog = {
@@ -429,11 +456,28 @@ function handleAdd() {
 }
 
 /**
- * 修改用户
+ * 修改企业
  **/
 async function handleUpdate(row: { [key: string]: any }) {
   detailCompany({ companyId: row.companyId }).then((res: any) => {
     formData.value = res.data;
+    if (!formData.value.province) {
+      formData.value.province = [];
+    }
+    if (!formData.value.city) {
+      formData.value.city = [];
+    }
+
+    // formData.value.province = ['全国'];
+    // formData.value.city = ['全国'];
+
+    formData.value.totalcity = formData.value.province.concat(
+      formData.value.city
+    );
+    console.log('start-----', formData.value.totalcity);
+    province.value = formData.value.province;
+    city.value = formData.value.city;
+    getDeptOptions(userStore.$state.province);
     dialog.value = {
       title: '修改企业',
       visible: true
@@ -463,13 +507,13 @@ function submitForm() {
 
       if (userId) {
         updateCompany(state.formData).then(() => {
-          ElMessage.success('修改用户成功');
+          ElMessage.success('修改企业成功');
           closeDialog();
           handleQuery();
         });
       } else {
         createCompany(state.formData).then(() => {
-          ElMessage.success('新增用户成功');
+          ElMessage.success('新增企业成功');
           closeDialog();
           handleQuery();
         });
@@ -479,12 +523,12 @@ function submitForm() {
 }
 
 /**
- * 删除用户
+ * 删除企业
  */
 function handleDelete(row: { [key: string]: any }) {
   const userIds = row.id || state.ids.join(',');
   ElMessageBox.confirm(
-    '是否确认删除用户编号为「' + userIds + '」的数据项?',
+    '是否确认删除企业编号为「' + userIds + '」的数据项?',
     '警告',
     {
       confirmButtonText: '确定',
@@ -502,7 +546,7 @@ function handleDelete(row: { [key: string]: any }) {
 }
 
 /**
- * 关闭用户弹窗
+ * 关闭企业弹窗
  */
 function closeDialog() {
   dialog.value.visible = false;
@@ -516,7 +560,7 @@ function closeDialog() {
  */
 async function getDeptOptions(province: any) {
   getUserArea().then((response: any) => {
-    if (province === '全国') {
+    if (province[0] === '全国') {
       citylist.value = response.data;
     } else {
       response.data.forEach((element: any) => {
@@ -532,9 +576,36 @@ async function getDeptOptions(province: any) {
   });
 }
 
+function selectBlur(e: any) {
+  // 意见类型
+  if (e.target.value !== '') {
+    state.queryParams.company = e.target.value;
+    ctx.$forceUpdate();
+  }
+}
+function selectClear() {
+  state.queryParams.company = '';
+  ctx.$forceUpdate();
+}
+function selectChange(val: any) {
+  state.queryParams.company = val;
+  ctx.$forceUpdate();
+}
+
+const citylist = ref([]) as any;
+const restaurants = ref([]) as any;
+/**
+ * 获取性别下拉项
+ */
+function getGenderOptions(query: any) {
+  searchCompany({ company: query }).then((response: any) => {
+    restaurants.value = response?.data;
+  });
+}
+
 onMounted(() => {
   getDeptOptions(userStore.$state.province);
-  // 初始化用户列表数据
+  // 初始化企业列表数据
   handleQuery();
 });
 </script>

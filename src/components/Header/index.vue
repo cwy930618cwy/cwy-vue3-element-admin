@@ -51,12 +51,9 @@ export default {
         list: [
           { id: "0", name: "全文" },
           { id: "1", name: "标题" },
-          { id: "2", name: "项目编号" },
           { id: "3", name: "招标单位" },
           { id: "4", name: "中标单位" },
           { id: "5", name: "代理单位" },
-          { id: "6", name: "联系人" },
-          { id: "7", name: "联系电话" },
         ],
         value: "0",
       },
