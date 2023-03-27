@@ -34,6 +34,8 @@ function logout() {
   ElMessageBox.confirm('确定退出系统吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
+    confirmButtonClass: 'el-button-primary',
+    cancelButtonClass: 'el-button-origin',
     type: 'warning'
   }).then(() => {
     userStore

@@ -43,8 +43,8 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button color="#7263CE" :icon="Search" @click="handleQuery">搜索</el-button>
-              <el-button :icon="Refresh" @click="resetQuery">重置</el-button>
+              <el-button class="el-button-primary" :icon="Search" @click="handleQuery">搜索</el-button>
+              <el-button class="el-button-origin" :icon="Refresh" @click="resetQuery">重置</el-button>
             </el-form-item>
             <!-- 
             <el-form-item>
@@ -52,11 +52,11 @@
             </el-form-item> -->
 
             <el-form-item>
-              <el-button color="#7263CE" :icon="Plus" @click="handleAllDisable">批量禁用</el-button>
+              <el-button class="el-button-primary" :icon="Plus" @click="handleAllDisable">批量禁用</el-button>
             </el-form-item>
 
             <el-form-item>
-              <el-button color="#7263CE" :icon="Plus" @click="handleAdd">新增账号</el-button>
+              <el-button class="el-button-primary" :icon="Plus" @click="handleAdd">新增账号</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -152,8 +152,8 @@
       </el-form>
       <template #footer>
         <div class="dialog-footer">
-          <el-button color="#7263CE" @click="submitForm">确 定</el-button>
-          <el-button @click="closeDialog">取 消</el-button>
+          <el-button class="el-button-primary" @click="submitForm">确 定</el-button>
+          <el-button class="el-button-origin" @click="closeDialog">取 消</el-button>
         </div>
       </template>
     </el-dialog>
@@ -403,6 +403,8 @@ function handleStatusChange(row: { [key: string]: any }) {
     {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
+      confirmButtonClass: 'el-button-primary',
+      cancelButtonClass: 'el-button-origin',
       type: 'warning'
     }
   )
@@ -482,6 +484,8 @@ function handleAllDisable(selection: any) {
   ElMessageBox.confirm('确认要批量禁用用户吗?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
+    confirmButtonClass: 'el-button-primary',
+    cancelButtonClass: 'el-button-origin',
     type: 'warning'
   })
     .then(() => {
@@ -515,7 +519,9 @@ function resetPassword(row: { [key: string]: any }) {
     '重置密码',
     {
       confirmButtonText: '确定',
-      cancelButtonText: '取消'
+      cancelButtonText: '取消',
+      confirmButtonClass: 'el-button-primary',
+      cancelButtonClass: 'el-button-origin'
     }
   )
     .then(({ value }) => {
@@ -623,6 +629,8 @@ function handleDelete(row: { [key: string]: any }) {
     {
       confirmButtonText: '确定',
       cancelButtonText: '取消',
+      confirmButtonClass: 'el-button-primary',
+      cancelButtonClass: 'el-button-origin',
       type: 'warning'
     }
   )
@@ -705,6 +713,8 @@ async function handleReset(row: { [key: string]: any }) {
   ElMessageBox.confirm('确认要为账号' + row.userName + '重置密码吗?', '警告', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
+    confirmButtonClass: 'el-button-primary',
+    cancelButtonClass: 'el-button-origin',
     type: 'warning'
   })
     .then(() => {

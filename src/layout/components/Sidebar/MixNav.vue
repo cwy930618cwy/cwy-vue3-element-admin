@@ -50,6 +50,8 @@ function logout() {
   ElMessageBox.confirm('确定注销并退出系统吗？', '提示', {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
+    confirmButtonClass: 'el-button-primary',
+    cancelButtonClass: 'el-button-origin',
     type: 'warning'
   }).then(() => {
     userStore
@@ -66,20 +68,8 @@ function logout() {
 
 <template>
   <div class="horizontal-header">
-    <el-menu
-      class="horizontal-header-menu"
-      :default-active="activeMenu"
-      :background-color="variables.menuBg"
-      :text-color="variables.menuText"
-      :active-text-color="variables.menuActiveText"
-      mode="horizontal"
-    >
-      <sidebar-item
-        v-for="route in routes"
-        :item="route"
-        :key="route.path"
-        :base-path="route.path"
-      />
+    <el-menu class="horizontal-header-menu" :default-active="activeMenu" :background-color="variables.menuBg" :text-color="variables.menuText" :active-text-color="variables.menuActiveText" mode="horizontal">
+      <sidebar-item v-for="route in routes" :item="route" :key="route.path" :base-path="route.path" />
     </el-menu>
 
     <div class="horizontal-header-right">
@@ -96,10 +86,7 @@ function logout() {
 
       <el-dropdown trigger="click">
         <div class="flex justify-center items-center pr-[20px]">
-          <img
-            :src="userStore.avatar + '?imageView2/1/w/80/h/80'"
-            class="w-[40px] h-[40px] rounded-lg"
-          />
+          <img :src="userStore.avatar + '?imageView2/1/w/80/h/80'" class="w-[40px] h-[40px] rounded-lg" />
           <CaretBottom class="w-3 h-3" />
         </div>
 

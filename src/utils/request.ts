@@ -45,6 +45,8 @@ service.interceptors.response.use(
     } else if (code === '30000' || code === '30001') {
         ElMessageBox.confirm('当前页面已失效，请重新登录', '提示', {
           confirmButtonText: 'OK',
+          confirmButtonClass: 'el-button-primary',
+          cancelButtonClass: 'el-button-origin',
           type: 'warning'
         }).then(() => {
           localStorage.clear();

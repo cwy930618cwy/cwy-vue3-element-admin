@@ -44,3 +44,41 @@ svg{
 .el-button.is-link {
   color: #7263CE !important;
 }
+
+.el-button-primary {
+  color: #7263CE;
+}
+
+.el-button-origin {
+  color: #606266 !important;
+  border-color: #dcdfe6 !important;
+  background: #ffffff !important;
+  background-color: #ffffff !important;
+  &:hover {
+    border-color: #dcdfe6 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+  }
+  &:active {
+    border-color: #dcdfe6 !important;
+    background: #ffffff !important;
+    background-color: #ffffff !important;
+  }
+}
+
+.el-button-primary {
+  color: #ffffff !important;
+  border-color: #7263CE !important;
+  background: #7263CE !important;
+  background-color: #7263CE !important;
+  &:hover {
+    border-color: #7263CE !important;
+    background: #7263CE !important;
+    background-color: #7263CE !important;
+  }
+  &:active {
+    border-color: #7263CE !important;
+    background: #7263CE !important;
+    background-color: #7263CE !important;
+  }
+}
