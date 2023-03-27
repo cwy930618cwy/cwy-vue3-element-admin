@@ -117,7 +117,7 @@
     </el-row>
 
     <!-- 用户表单 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="600px" append-to-body @close="closeDialog">
+    <el-dialog :title="dialog.title" v-if="dialog.visible" v-model="dialog.visible" width="600px" append-to-body @close="closeDialog">
       <el-form ref="dataFormRef" label-position="top" height="250" :model="formData" :rules="rules" label-width="80px">
         <el-form-item label="所属公司名称" prop="company">
           <el-select v-if="userStore.$state.roleId === 1" v-model="formData.company" filterable remote reserve-keyword placeholder="请输入关键词" :remote-method="getGenderOptions" :loading="loading" @change="selectCompany">
@@ -132,7 +132,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="账号" prop="userName">
-          <el-input v-model="formData.userName" placeholder="请输入账号" />
+          <el-input v-model.trim="formData.userName" placeholder="请输入账号" @input="formData.userName = formData.userName.replace(/[\u4E00-\u9FA5]/g,'')"></el-input>
         </el-form-item>
         <el-form-item label="密码" v-if="false" prop="password">
           <el-input v-model="formData.password" placeholder="请输入密码" />
@@ -186,6 +186,7 @@ import {
   fetchList,
   fetchCompanyInfo,
   detailAccount,
+  deleteOneAccount,
   createAccount,
   updateAccount,
   deleteAccount,
@@ -323,6 +324,8 @@ const city = ref([]);
 
 function provinceChange(citys: any) {
   let total = citys;
+  province.value = [];
+  city.value = [];
   citys.forEach((item: any) => {
     if (province.value.indexOf(item[0]) === -1) {
       province.value.push(item[0]);
@@ -404,9 +407,11 @@ function handleStatusChange(row: { [key: string]: any }) {
     }
   )
     .then(() => {
-      deleteAccount({ state: row.states, userIds: [row.userId] }).then(() => {
-        ElMessage.success(text + '成功');
-      });
+      deleteOneAccount({ state: row.states, userIds: [row.userId] }).then(
+        () => {
+          ElMessage.success(text + '成功');
+        }
+      );
     })
     .catch(() => {
       row.states = row.states === 1 ? 0 : 1;
@@ -533,7 +538,7 @@ const resetTemp = () => {
     userName: '',
     password: '',
     province: '',
-    totalcity: '',
+    totalcity: userStore.$state.province.indexOf('全国') !== -1 ? ['全国'] : [],
     linkMan: '',
     linkPhone: '',
     ramark: ''
@@ -545,7 +550,7 @@ const resetTemp = () => {
  **/
 async function handleAdd() {
   state.dialog = {
-    title: '添加账号',
+    title: '新增账号',
     visible: true
   };
   await getDeptOptions(userStore.$state.province);
@@ -577,7 +582,7 @@ async function handleUpdate(row: { [key: string]: any }) {
     city.value = formData.value.city;
     getDeptOptions(userStore.$state.province);
     dialog.value = {
-      title: '修改账号',
+      title: '编辑账号',
       visible: true
     };
   });
@@ -644,24 +649,17 @@ function closeDialog() {
  * 获取部门下拉项
  */
 async function getDeptOptions(province: any) {
-  // formData.value.province = ['安徽']
-  // formData.value.city = ['安庆']
-
+  citylist.value = [];
   getUserArea().then((response: any) => {
-    if (province === '全国') {
+    if (province.indexOf('全国') !== -1) {
       citylist.value = response.data;
     } else {
       response.data.forEach((element: any) => {
-        if (element.name === province) {
-          if (element.children && element.children.length > 0) {
-            citylist.value = element.children;
-          } else {
-            citylist.value = response.data;
-          }
+        if (province.indexOf(element.name) !== -1) {
+          citylist.value.push(element);
         }
       });
     }
-    formData.value.province = ['安徽'];
   });
 }
 

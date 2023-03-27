@@ -93,7 +93,7 @@
     </el-row>
 
     <!-- 公司表单 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="600px" append-to-body @close="closeDialog">
+    <el-dialog :title="dialog.title" v-model="dialog.visible" v-if="dialog.visible" width="600px" append-to-body @close="closeDialog">
       <el-form ref="dataFormRef" label-position="top" height="250" :model="formData" :rules="rules" label-width="80px">
         <el-form-item label="公司类型" prop="companyType">
           <el-radio-group v-model="formData.companyType">
@@ -230,7 +230,7 @@ const state = reactive({
     companyId: null,
     companyType: 0,
     company: '',
-    province: '',
+    province: [''],
     totalcity: [''],
     accountNum: '',
     accessBeginTime: null,
@@ -298,6 +298,8 @@ let city = ref([]);
 
 function provinceChange(citys: any) {
   let total = citys;
+  province.value = [];
+  city.value = [];
   citys.forEach((item: any) => {
     if (province.value.indexOf(item[0]) === -1) {
       province.value.push(item[0]);
@@ -435,8 +437,8 @@ const resetTemp = () => {
     companyId: null,
     companyType: 0,
     company: '',
-    province: citylist.value[0].name,
-    totalcity: [''],
+    province: [''],
+    totalcity: ['全国'],
     accountNum: '',
     accessBeginTime: null,
     accessEndTime: null,
@@ -451,7 +453,7 @@ const resetTemp = () => {
  **/
 function handleAdd() {
   state.dialog = {
-    title: '添加公司',
+    title: '新增公司',
     visible: true
   };
   nextTick(() => {
@@ -473,19 +475,14 @@ async function handleUpdate(row: { [key: string]: any }) {
     if (!formData.value.city) {
       formData.value.city = [];
     }
-
-    // formData.value.province = ['全国'];
-    // formData.value.city = ['全国'];
-
     formData.value.totalcity = formData.value.province.concat(
       formData.value.city
     );
-    console.log('start-----', formData.value.totalcity);
     province.value = formData.value.province;
     city.value = formData.value.city;
     getDeptOptions(userStore.$state.province);
     dialog.value = {
-      title: '修改公司',
+      title: '编辑公司',
       visible: true
     };
   });
@@ -565,20 +562,9 @@ function closeDialog() {
  * 获取部门下拉项
  */
 async function getDeptOptions(province: any) {
+  citylist.value = [];
   getUserArea().then((response: any) => {
-    if (province[0] === '全国') {
-      citylist.value = response.data;
-    } else {
-      response.data.forEach((element: any) => {
-        if (element.name === province) {
-          if (element.children && element.children.length > 0) {
-            citylist.value = element.children;
-          } else {
-            citylist.value = response.data;
-          }
-        }
-      });
-    }
+    citylist.value = response.data;
   });
 }
 

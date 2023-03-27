@@ -16,7 +16,7 @@ export const useUserStore = defineStore('user', () => {
   const avatar = ref<string>('');
   const company = ref<string>('');
   const companyId = ref<string>('');
-  const province = ref<string>('');
+  const province = ref([]) as any;
   const accountNum = ref<string>('');
   const accessEndTime = ref<string>('');
   const roleId = ref(0) as any;
@@ -118,7 +118,7 @@ export const useUserStore = defineStore('user', () => {
     token.value = '';
     nickname.value = '';
     avatar.value = '';
-    province.value = '';
+    province.value = [''];
     company.value = '';
     accessEndTime.value = '';
     accountNum.value = '';

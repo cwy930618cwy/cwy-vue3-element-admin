@@ -48,6 +48,14 @@ export function deleteAccount(data: any) {
   })
 }
 
+export function deleteOneAccount(data: any) {
+  return request({
+    url: '/api/v1/authorize/state',
+    method: 'post',
+    data
+  })
+}
+
 export function resetPasswordAccount(data: any) {
   return request({
     url: '/api/v1/authorize/resetPassword',

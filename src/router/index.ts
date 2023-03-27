@@ -30,7 +30,7 @@ export const constantRoutes: RouteRecordRaw[] = [
   {
     path: '/',
     component: Layout,
-    redirect: '/home',
+    redirect: '/account',
     children: [
       {
         path: '401',

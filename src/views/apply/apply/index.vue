@@ -58,10 +58,10 @@
     </el-row>
 
     <!-- 用户表单 -->
-    <el-dialog :title="dialog.title" v-model="dialog.visible" width="600px" append-to-body @close="closeDialog">
+    <el-dialog :title="dialog.title" v-model="dialog.visible" v-if="dialog.visible" width="600px" append-to-body @close="closeDialog">
       <el-form ref="dataFormRef" label-position="top" height="250" :model="formData" :rules="rules" label-width="80px">
         <el-form-item label="备注" prop="desc">
-          <el-input v-model="formData.desc" placeholder="请输入备注" maxlength="200" />
+          <el-input v-model="formData.desc" placeholder="请输入备注" type="textarea" maxlength="200" />
         </el-form-item>
       </el-form>
       <template #footer>
