@@ -286,9 +286,7 @@ const state = reactive({
     linkMan: [{ required: true, message: '姓名不能为空', trigger: 'blur' }],
     totalcity: [
       { required: true, message: '地区权限不能为空', trigger: 'change' }
-    ],
-    linkPhone: [{ required: true, message: '手机号不能为空', trigger: 'blur' }],
-    remarks: [{ required: true, message: '备注不能为空', trigger: 'blur' }]
+    ]
   },
 
   importDialog: {
@@ -322,23 +320,47 @@ const {
 const province = ref([]);
 const city = ref([]);
 
+let totalcity = ref(false);
+
 function provinceChange(citys: any) {
-  let total = citys;
+  let total = [];
   province.value = [];
   city.value = [];
-  citys.forEach((item: any) => {
-    if (province.value.indexOf(item[0]) === -1) {
-      province.value.push(item[0]);
-    }
-    if (item[1] && city.value.indexOf(item[1]) === -1) {
-      city.value.push(item[1]);
-    }
-    if (item[0] === '全国' || item === '全国') {
-      total = ['全国'];
-      province.value = ['全国'];
-      city.value = ['全国'];
-    }
-  });
+
+  if (totalcity.value) {
+    totalcity.value = false;
+    citys.forEach((item: any) => {
+      if (item[0] !== '全国' && item !== '全国') {
+        if (province.value.indexOf(item[0]) === -1) {
+          province.value.push(item[0]);
+        }
+        if (item[1] && city.value.indexOf(item[1]) === -1) {
+          city.value.push(item[1]);
+        }
+        total.push(item);
+      }
+    });
+  } else {
+    citys.forEach((item: any) => {
+      if (item[0] === '全国' || item === '全国') {
+        totalcity.value = true;
+      }
+      if (province.value.indexOf(item[0]) === -1) {
+        province.value.push(item[0]);
+      }
+      if (item[1] && city.value.indexOf(item[1]) === -1) {
+        city.value.push(item[1]);
+      }
+      total.push(item);
+    });
+  }
+
+  if (totalcity.value) {
+    total = ['全国'];
+    province.value = ['全国'];
+    city.value = ['全国'];
+  }
+
   state.formData.totalcity = total;
   state.formData.province = province.value;
   state.formData.city = city.value;
@@ -544,7 +566,7 @@ const resetTemp = () => {
     userName: '',
     password: '',
     province: '',
-    totalcity: userStore.$state.province.indexOf('全国') !== -1 ? ['全国'] : [],
+    totalcity: [],
     linkMan: '',
     linkPhone: '',
     ramark: ''
@@ -559,12 +581,11 @@ async function handleAdd() {
     title: '新增账号',
     visible: true
   };
-  await getDeptOptions(userStore.$state.province);
   await getRoleOptions();
   nextTick(() => {
+    resetTemp();
     dataFormRef.value.resetFields();
     dataFormRef.value.clearValidate();
-    resetTemp();
   });
 }
 
@@ -584,9 +605,14 @@ async function handleUpdate(row: { [key: string]: any }) {
     formData.value.totalcity = formData.value.province.concat(
       formData.value.city
     );
+    if (state.formData.totalcity.indexOf('全国') !== -1) {
+      totalcity.value = true;
+    } else {
+      totalcity.value = false;
+    }
     province.value = formData.value.province;
     city.value = formData.value.city;
-    getDeptOptions(userStore.$state.province);
+    getDeptOptions();
     dialog.value = {
       title: '编辑账号',
       visible: true
@@ -656,19 +682,22 @@ function closeDialog() {
 /**
  * 获取部门下拉项
  */
-async function getDeptOptions(province: any) {
+async function getDeptOptions(province?: any) {
   citylist.value = [];
-  getUserArea().then((response: any) => {
+  const originCityList = userStore.$state.originCityList;
+  if (province) {
     if (province.indexOf('全国') !== -1) {
-      citylist.value = response.data;
+      citylist.value = originCityList;
     } else {
-      response.data.forEach((element: any) => {
+      originCityList.forEach((element: any) => {
         if (province.indexOf(element.name) !== -1) {
           citylist.value.push(element);
         }
       });
     }
-  });
+  } else {
+    citylist.value = originCityList;
+  }
 }
 
 /**
@@ -697,11 +726,7 @@ function selectChange(val: any) {
 }
 
 function selectCompany(query: any) {
-  restaurants.value.forEach((item: any) => {
-    if (item.unitName === query) {
-      getDeptOptions(item.province[0]);
-    }
-  });
+  getDeptOptions(restaurants.value[0].province);
 }
 
 function handleSelect(item: any) {}
@@ -737,7 +762,7 @@ onMounted(() => {
 
   handleQuery();
   // 初始化部门
-  getDeptOptions(userStore.$state.province);
+  getDeptOptions();
   // 初始化用户列表数据
   handleQuery();
   getUserRoles();

@@ -109,6 +109,7 @@
         </el-form-item>
         <el-form-item label="地区权限" prop="totalcity">
           <el-cascader :options="citylist" style="width: 500px;" v-model="formData.totalcity" :props="{ multiple: true, value: 'name', label: 'name', checkStrictly: true }" clearable @change="provinceChange"></el-cascader>
+
         </el-form-item>
         <el-form-item label="开始日期和失效日期" prop="accessEndTime">
           <el-date-picker v-model="formData.accessBeginTime" type="date" placeholder="请输入生效日期">
@@ -202,7 +203,6 @@ const userStore = useUserStore();
 
 const queryFormRef = ref(ElForm); // 查询表单
 const dataFormRef = ref(ElForm); // 公司表单
-const cascaderRef = ref(ElForm); // 公司表单
 const importFormRef = ref(ElForm); // 导入表单
 
 const { ctx, proxy }: any = getCurrentInstance();
@@ -295,24 +295,46 @@ const {
 
 let province = ref([]);
 let city = ref([]);
+let totalcity = ref(false);
 
 function provinceChange(citys: any) {
-  let total = citys;
+  let total = [];
   province.value = [];
   city.value = [];
-  citys.forEach((item: any) => {
-    if (province.value.indexOf(item[0]) === -1) {
-      province.value.push(item[0]);
-    }
-    if (item[1] && city.value.indexOf(item[1]) === -1) {
-      city.value.push(item[1]);
-    }
-    if (item[0] === '全国' || item === '全国') {
-      total = ['全国'];
-      province.value = ['全国'];
-      city.value = ['全国'];
-    }
-  });
+  if (totalcity.value) {
+    totalcity.value = false;
+    citys.forEach((item: any) => {
+      if (item[0] !== '全国' && item !== '全国') {
+        if (province.value.indexOf(item[0]) === -1) {
+          province.value.push(item[0]);
+        }
+        if (item[1] && city.value.indexOf(item[1]) === -1) {
+          city.value.push(item[1]);
+        }
+        total.push(item);
+      }
+    });
+  } else {
+    citys.forEach((item: any) => {
+      if (item[0] === '全国' || item === '全国') {
+        totalcity.value = true;
+      }
+      if (province.value.indexOf(item[0]) === -1) {
+        province.value.push(item[0]);
+      }
+      if (item[1] && city.value.indexOf(item[1]) === -1) {
+        city.value.push(item[1]);
+      }
+      total.push(item);
+    });
+  }
+
+  if (totalcity.value) {
+    total = ['全国'];
+    province.value = ['全国'];
+    city.value = ['全国'];
+  }
+
   state.formData.totalcity = total;
   state.formData.province = province.value;
   state.formData.city = city.value;
@@ -439,8 +461,8 @@ const resetTemp = () => {
     companyId: null,
     companyType: 0,
     company: '',
-    province: [''],
-    totalcity: ['全国'],
+    province: [],
+    totalcity: [],
     accountNum: '',
     accessBeginTime: null,
     accessEndTime: null,
@@ -480,9 +502,14 @@ async function handleUpdate(row: { [key: string]: any }) {
     formData.value.totalcity = formData.value.province.concat(
       formData.value.city
     );
+    if (state.formData.totalcity.indexOf('全国') !== -1) {
+      totalcity.value = true;
+    } else {
+      totalcity.value = false;
+    }
     province.value = formData.value.province;
     city.value = formData.value.city;
-    getDeptOptions(userStore.$state.province);
+    getDeptOptions();
     dialog.value = {
       title: '编辑公司',
       visible: true
@@ -565,11 +592,8 @@ function closeDialog() {
 /**
  * 获取部门下拉项
  */
-async function getDeptOptions(province: any) {
-  citylist.value = [];
-  getUserArea().then((response: any) => {
-    citylist.value = response.data;
-  });
+async function getDeptOptions() {
+  citylist.value = userStore.$state.originCityList;
 }
 
 function selectBlur(e: any) {
@@ -600,7 +624,7 @@ function getGenderOptions(query: any) {
 }
 
 onMounted(() => {
-  getDeptOptions(userStore.$state.province);
+  getDeptOptions();
   // 初始化公司列表数据
   handleQuery();
 });

@@ -2,6 +2,9 @@ import router from '@/router';
 import { RouteRecordRaw } from 'vue-router';
 import { useUserStoreHook } from '@/store/modules/user';
 import { usePermissionStoreHook } from '@/store/modules/permission';
+import {
+  ElMessage,
+} from 'element-plus';
 
 import NProgress from 'nprogress';
 import 'nprogress/nprogress.css';
@@ -32,6 +35,7 @@ router.beforeEach(async (to, from, next) => {
       } else {
         try {
           await userStore.getRoles();
+          await userStore.getCity();
           const { roles } = await userStore.getInfo();
           const accessRoutes: RouteRecordRaw[] =
             await permissionStore.generateRoutes(roles);
@@ -40,7 +44,19 @@ router.beforeEach(async (to, from, next) => {
             router.addRoute(route);
           });
 
-          next({ ...to, replace: true });
+          if (accessRoutes.length === 0) {
+            ElMessage({
+              message: "您没有权限访问该系统，请联系管理员开通权限",
+              type: "error",
+              duration: 5000,
+            });
+            await userStore.resetToken();
+            next(`/login?redirect=${to.path}`);
+            NProgress.done();
+          } else {
+            next({ ...to, replace: true });
+          }
+
         } catch (error) {
           // 移除 token 并跳转登录页
           await userStore.resetToken();

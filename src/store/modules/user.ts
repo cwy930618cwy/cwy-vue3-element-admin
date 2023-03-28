@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 
 import { getToken, setToken, removeToken } from '@/utils/auth';
 import { loginApi, logoutApi } from '@/api/auth';
-import { getUserInfo, getUserRoles } from '@/api/user';
+import { getUserInfo, getUserRoles, getUserArea } from '@/api/user';
 import { resetRouter } from '@/router';
 import { store } from '@/store';
 import { LoginData } from '@/api/auth/types';
@@ -22,6 +22,7 @@ export const useUserStore = defineStore('user', () => {
   const roleId = ref(0) as any;
   const roleName = ref('') as any;
   const rolesTypeList = ref([]) as any;
+  const originCityList = ref([]) as any;
   const roles = ref<Array<string>>([]); // 用户角色编码集合 → 判断路由权限
   const perms = ref<Array<string>>([]); // 用户权限编码集合 → 判断按钮权限
 
@@ -48,6 +49,20 @@ export const useUserStore = defineStore('user', () => {
       getUserRoles()
         .then((data: any) => {
           rolesTypeList.value = data.data
+          resolve(data.data);
+        })
+        .catch(error => {
+          reject(error);
+        });
+    });
+  }
+
+  // 获取城市
+  function getCity() {
+    return new Promise<any>((resolve, reject) => {
+      getUserArea()
+        .then((data: any) => {
+          originCityList.value = data.data
           resolve(data.data);
         })
         .catch(error => {
@@ -129,6 +144,7 @@ export const useUserStore = defineStore('user', () => {
     roleId,
     accessEndTime,
     companyId,
+    originCityList,
     rolesTypeList,
     roleName,
     accountNum,
@@ -140,6 +156,7 @@ export const useUserStore = defineStore('user', () => {
     roles,
     perms,
     login,
+    getCity,
     getRoles,
     getInfo,
     logout,
