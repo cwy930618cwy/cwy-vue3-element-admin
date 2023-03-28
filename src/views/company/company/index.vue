@@ -44,13 +44,13 @@
             </el-table-column>
             <el-table-column label="状态" align="center" prop="states">
               <template #default="scope">
-                <el-switch v-model="scope.row.states" :inactive-value="0" :active-value="1" :before-change="beforeSwitchChange" @change="handleStatusChange(scope.row)" />
+                <el-switch v-model="scope.row.states" :disabled="proxy.$filters.formatSeven(scope.row.accessEndTime) <=0" :inactive-value="0" :active-value="1" :before-change="beforeSwitchChange" @change="handleStatusChange(scope.row)" />
               </template>
             </el-table-column>
             <el-table-column label="失效日期" sortable align="center" prop="accessEndTime" min-width="120">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatTime(scope.row.accessEndTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.accessEndTime) }}</span>
-                <el-tag class="ml-2" v-if="proxy.$filters.formatSeven(scope.row.accessEndTime) < 30" type="danger">剩余{{ proxy.$filters.formatSeven(scope.row.accessEndTime) }}天</el-tag>
+                <el-tag class="ml-2" v-if="proxy.$filters.formatSeven(scope.row.accessEndTime) < 30 && proxy.$filters.formatSeven(scope.row.accessEndTime) > 0" type="danger">剩余{{ proxy.$filters.formatSeven(scope.row.accessEndTime) }}天</el-tag>
               </template>
             </el-table-column>
 
@@ -72,7 +72,11 @@
               </template>
             </el-table-column>
 
-            <el-table-column label="地区权限" align="center" prop="province" min-width="120" />
+            <el-table-column label="地区权限" show-overflow-tooltip align="center" prop="province" min-width="120">
+              <template #default="scope">
+                <span>{{ proxy.$filters.formatCity(scope.row.province, scope.row.city) }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="创建时间" sortable align="center" prop="createTime" min-width="180">
               <template #default="scope">
                 <span>{{ proxy.$filters.formatTime(scope.row.createTime) === 0 ? '-' : proxy.$filters.formatTime(scope.row.createTime) }}</span>
@@ -113,7 +117,6 @@
         </el-form-item>
         <el-form-item label="地区权限" prop="totalcity">
           <el-cascader :options="citylist" style="width: 500px;" v-model="formData.totalcity" :props="{ multiple: true, value: 'name', label: 'name', checkStrictly: true }" clearable @change="provinceChange"></el-cascader>
-
         </el-form-item>
         <el-form-item label="开始日期和失效日期" prop="accessEndTime">
           <el-date-picker v-model="formData.accessBeginTime" type="date" placeholder="请输入生效日期">

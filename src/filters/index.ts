@@ -1,5 +1,7 @@
 // import parseTime, formatTime and set to filter
 export { parseTime, formatTime } from "@/utils";
+import { useUserStore } from '@/store/modules/user';
+const userStore = useUserStore();
 
 /**
  * Show plural label if time is plural number
@@ -106,8 +108,6 @@ export function getSeven(timestamp: any) {
   return day + 1
 }
 
-import { useUserStore } from '@/store/modules/user';
-const userStore = useUserStore();
 
 export function getformatRoleName(roleId: any) {
   let roleName = ''
@@ -118,3 +118,34 @@ export function getformatRoleName(roleId: any) {
   })
   return roleName
 }
+
+export function getCity(provice: any,city: any) {
+  let citylist = userStore.$state.originCityList;
+  let totalName = []
+  let cityName = []
+  if (provice.indexOf('全国') !== -1) {
+    totalName = ['全国']
+  } else {
+    citylist.forEach((item: any) => {
+      if (item.name !== '全国') {
+        cityName = []
+        if (item.children && item.children.length > 0) {
+          item.children.forEach((childItem: any) => {
+            if (city.indexOf(childItem.name) !== -1) {
+              cityName = cityName.concat(childItem.name)
+            }
+          })
+        }
+        if (provice.indexOf(item.name) !== -1) {
+          if (cityName.length === 0) {
+            totalName = totalName.concat(item.name)
+          } else {
+            totalName = totalName.concat(cityName)
+          }
+        }
+      }
+    });
+  }
+  return totalName.join(',')
+}
+

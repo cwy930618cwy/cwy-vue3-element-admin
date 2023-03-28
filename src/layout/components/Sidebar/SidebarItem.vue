@@ -102,14 +102,14 @@ function resolveImg(icon: any) {
 <style lang="scss" scoped>
 .hideSidebar {
   .sidebar_image {
-    height: 22px;
-    width: 22px;
+    height: 18px;
+    width: 18px;
   }
 }
 .openSidebar {
   .sidebar_image {
-    height: 30px;
-    width: 30px;
+    height: 26px;
+    width: 26px;
     margin-right: 20px;
   }
 }

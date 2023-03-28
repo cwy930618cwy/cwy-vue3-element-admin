@@ -86,7 +86,11 @@
             </el-table-column>
             <el-table-column label="所属公司名称" show-overflow-tooltip width="220" align="center" prop="company" />
             <el-table-column label="手机号" width="120" align="center" prop="linkPhone" />
-            <el-table-column label="地区权限" align="center" prop="province" width="120" />
+            <el-table-column label="地区权限" show-overflow-tooltip align="center" prop="province" min-width="120">
+              <template #default="scope">
+                <span>{{ proxy.$filters.formatCity(scope.row.province, scope.row.city) }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="状态" align="center" prop="states">
               <template #default="scope">
                 <el-switch v-model="scope.row.states" :inactive-value="0" :active-value="1" @change="handleStatusChange(scope.row)" />

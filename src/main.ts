@@ -44,6 +44,9 @@ app.config.globalProperties.$filters = {
   },
   formatRoleName(time: any) {
     return filters.getformatRoleName(time)
+  },
+  formatCity(province: any, city: any) {
+    return filters.getCity(province, city)
   }
 }
 
