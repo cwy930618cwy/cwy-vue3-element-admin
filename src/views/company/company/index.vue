@@ -7,7 +7,7 @@
         <div class="search">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="公司名称" prop="company">
-              <el-select v-model="queryParams.company" style="width: 180px;" filterable clearable remote reserve-keyword placeholder="请输入关键词" @blur="selectBlur" @clear="selectClear" @change="selectChange" :remote-method="getGenderOptions">
+              <el-select v-model="queryParams.company" style="width: 180px;" filterable clearable remote reserve-keyword placeholder="请输入公司名称" @blur="selectBlur" @clear="selectClear" @change="selectChange" :remote-method="getGenderOptions">
                 <el-option v-for="item in restaurants" :key="item.unitName" :label="item.unitName" :value="item.unitName">
                 </el-option>
               </el-select>
@@ -19,8 +19,8 @@
 
             <el-form-item>
               <el-button class="el-button-primary" :icon="Search" @click="handleQuery">搜索</el-button>
-              <el-button class="el-button-origin" :icon="Refresh" @click="resetQuery">重置</el-button>
-              <el-button class="el-button-primary" :icon="Plus" @click="handleAdd">新增公司</el-button>
+              <!-- <el-button class="el-button-origin" :icon="Refresh" @click="resetQuery">重置</el-button> -->
+              <el-button class="el-button-primary" :icon="Plus" @click="handleAdd">新建公司</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -65,10 +65,15 @@
                 <span>{{ scope.row.dailyCount[item] }}</span>
               </template>
             </el-table-column>
-            <el-table-column label="商务经理" align="center" prop="salesPerson" min-width="120" />
+            <el-table-column label="商务经理" align="center" prop="salesPerson" min-width="120">
+              <template #default="scope">
+                <span>{{ scope.row.salesPerson === '' ? '--' : scope.row.salesPerson }}</span>
+              </template>
+            </el-table-column>
             <el-table-column label="公司联系人/公司联系电话" show-overflow-tooltip min-width="120" align="center" prop="linkMan">
               <template #default="scope">
-                {{ scope.row.linkMan }}/{{ scope.row.linkPhone }}
+                <span v-if="scope.row.linkMan === '' && scope.row.linkPhone === ''">--</span>
+                <span v-else>{{ scope.row.linkMan }}/{{ scope.row.linkPhone }}</span>
               </template>
             </el-table-column>
 
@@ -485,7 +490,7 @@ const resetTemp = () => {
  **/
 function handleAdd() {
   state.dialog = {
-    title: '新增公司',
+    title: '新建公司',
     visible: true
   };
   nextTick(() => {

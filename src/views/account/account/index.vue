@@ -24,7 +24,7 @@
         <div class="search">
           <el-form ref="queryFormRef" :model="queryParams" :inline="true">
             <el-form-item label="公司名称" prop="company" v-if="userStore.$state.roleId === 1">
-              <el-select v-model="queryParams.company" style="width: 180px;" filterable clearable remote reserve-keyword placeholder="请输入关键词" @blur="selectBlur" @clear="selectClear" @change="selectChange" :remote-method="getGenderOptions">
+              <el-select v-model="queryParams.company" style="width: 180px;" filterable clearable remote reserve-keyword placeholder="请输入公司名称" @blur="selectBlur" @clear="selectClear" @change="selectChange" :remote-method="getGenderOptions">
                 <el-option v-for="item in restaurants" :key="item.unitName" :label="item.unitName" :value="item.unitName">
                 </el-option>
               </el-select>
@@ -56,7 +56,7 @@
             </el-form-item>
 
             <el-form-item>
-              <el-button class="el-button-primary" :icon="Plus" @click="handleAdd">新增账号</el-button>
+              <el-button class="el-button-primary" :icon="Plus" @click="handleAdd">新建账号</el-button>
             </el-form-item>
           </el-form>
         </div>
@@ -582,7 +582,7 @@ const resetTemp = () => {
  **/
 async function handleAdd() {
   state.dialog = {
-    title: '新增账号',
+    title: '新建账号',
     visible: true
   };
   await getRoleOptions();
