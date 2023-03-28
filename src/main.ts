@@ -18,6 +18,7 @@ import '@/styles/index.scss';
 // import '@/styless/common.scss';
 import 'element-plus/theme-chalk/index.css';
 //import 'element-plus/theme-chalk/dark/css-vars.css';
+import showTip from "@/utils/dom";
 
 const app = createApp(App);
 // 自定义指令
@@ -45,6 +46,8 @@ app.config.globalProperties.$filters = {
     return filters.getformatRoleName(time)
   }
 }
+
+app.directive("show-tip", showTip);
 
 // 全局挂载
 setupStore(app);

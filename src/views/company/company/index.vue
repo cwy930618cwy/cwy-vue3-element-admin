@@ -27,10 +27,14 @@
 
         <el-card shadow="never">
           <el-table v-loading="loading" :data="userList">
-            <el-table-column label="公司名称" show-overflow-tooltip align="center" min-width="200" prop="company">
+            <el-table-column label="公司名称" align="center" min-width="200" prop="company">
               <template #default="scope">
-                <span style="color: #409eff;cursor: pointer;" @click="resetPassword(scope.row)">{{ scope.row.company }}</span>
-                <el-tag class="ml-2" v-if="scope.row.companyType === 0" type="danger">试用</el-tag>
+                <div class="fr">
+                  <div class="test" @click="resetPassword(scope.row)">
+                    <TextTooltip :line="1" :text="scope.row.company" />
+                  </div>
+                  <el-tag class="ml-2" v-if="scope.row.companyType === 0" type="danger">试用</el-tag>
+                </div>
               </template>
             </el-table-column>
             <el-table-column label="可用账号数/授权账号数" min-width="100" align="center" prop="validNum">
@@ -145,6 +149,7 @@ export default {
 </script>
 
 <script setup lang="ts">
+import TextTooltip from '@/components/TextTooltip/index.vue';
 import {
   reactive,
   ref,

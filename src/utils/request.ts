@@ -42,17 +42,47 @@ service.interceptors.response.use(
     const { code, msg } = response.data;
     if (code === '0') {
       return response.data;
-    } else if (code === '30000' || code === '30001') {
-        ElMessageBox.confirm('当前页面已失效，请重新登录', '提示', {
-          confirmButtonText: 'OK',
-          confirmButtonClass: 'el-button-primary',
-          cancelButtonClass: 'el-button-origin',
-          type: 'warning'
-        }).then(() => {
-          localStorage.clear();
-          window.location.href = '/';
-        });
-      } else {
+    } else if (code === '30000') {
+      ElMessageBox.confirm('当前页面已失效，请重新登录', '提示', {
+        confirmButtonText: 'OK',
+        confirmButtonClass: 'el-button-primary',
+        cancelButtonClass: 'el-button-origin',
+        type: 'warning'
+      }).then(() => {
+        localStorage.clear();
+        window.location.href = '/';
+      });
+    } else if (code === '30001') {
+      ElMessageBox.confirm('您的账号已在别处登录，请重试', '提示', {
+        confirmButtonText: 'OK',
+        confirmButtonClass: 'el-button-primary',
+        cancelButtonClass: 'el-button-origin',
+        type: 'warning'
+      }).then(() => {
+        localStorage.clear();
+        window.location.href = '/';
+      });
+    } else if (code === '30004') {
+      ElMessageBox.confirm('账号已停用', '提示', {
+        confirmButtonText: 'OK',
+        confirmButtonClass: 'el-button-primary',
+        cancelButtonClass: 'el-button-origin',
+        type: 'warning'
+      }).then(() => {
+        localStorage.clear();
+        window.location.href = '/';
+      });
+    } else if (code === '30005') {
+      ElMessageBox.confirm('账号已过期，请联系商务开通', '提示', {
+        confirmButtonText: 'OK',
+        confirmButtonClass: 'el-button-primary',
+        cancelButtonClass: 'el-button-origin',
+        type: 'warning'
+      }).then(() => {
+        localStorage.clear();
+        window.location.href = '/';
+      });
+    } else {
       // 响应数据为二进制流处理(Excel导出)
       if (response.data instanceof ArrayBuffer) {
         return response;
